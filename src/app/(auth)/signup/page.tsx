@@ -1,7 +1,73 @@
+'use client'
+
+import { useActionState } from 'react'
+import Link from 'next/link'
+import { signup } from '@/lib/actions/auth'
+import { AuthField } from '@/components/auth/auth-field'
+import { SubmitButton } from '@/components/auth/submit-button'
+
 export default function SignupPage() {
+  const [state, action] = useActionState(signup, {})
+
   return (
-    <div className="flex min-h-svh items-center justify-center">
-      <p className="text-muted-foreground">Sign up — coming soon</p>
+    <div className="space-y-6">
+      <div className="space-y-1 text-center">
+        <h1 className="text-xl font-semibold">Create account</h1>
+        <p className="text-sm text-muted-foreground">Start tracking your fitness journey</p>
+      </div>
+
+      <form action={action} className="space-y-4">
+        {state.error && (
+          <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {state.error}
+          </p>
+        )}
+
+        <AuthField
+          id="displayName"
+          name="displayName"
+          label="Name"
+          placeholder="Your name"
+          autoComplete="name"
+          required
+          errors={state.fieldErrors?.displayName}
+        />
+
+        <AuthField
+          id="email"
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          inputMode="email"
+          required
+          errors={state.fieldErrors?.email}
+        />
+
+        <AuthField
+          id="password"
+          name="password"
+          label="Password"
+          type="password"
+          placeholder="Min. 8 characters"
+          autoComplete="new-password"
+          required
+          errors={state.fieldErrors?.password}
+        />
+
+        <SubmitButton label="Create account" loadingLabel="Creating account…" />
+      </form>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{' '}
+        <Link
+          href="/login"
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
     </div>
   )
 }
