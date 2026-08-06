@@ -15,7 +15,7 @@ export async function createPlan(formData: FormData) {
   const { supabase, user } = await getUser()
   const name = formData.get('name') as string
   const description = (formData.get('description') as string) || null
-  const split_type = (formData.get('split_type') as string) || 'custom'
+  const split_type = ((formData.get('split_type') as string) || 'custom') as import('@/types/database').SplitType
 
   const { data, error } = await supabase
     .from('workout_plans')
