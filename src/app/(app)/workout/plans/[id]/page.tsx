@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getWorkoutPlan } from '@/lib/queries/workout-plans'
 import { setActivePlan, deletePlan, createDay, deleteDay, removeExerciseFromDay } from '@/lib/actions/workout-plans'
+import { startSession } from '@/lib/actions/workout-sessions'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -67,9 +68,12 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ id:
           const removeFn = removeExerciseFromDay
           return (
             <div key={day.id} className="rounded-2xl border bg-card p-4 flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <h2 className="font-semibold">{day.name}</h2>
                 <div className="flex items-center gap-1">
+                  <form action={startSession.bind(null, id, day.id, day.name)}>
+                    <Button size="sm" type="submit">▶ Start</Button>
+                  </form>
                   <Link href={`/workout/plans/${id}/days/${day.id}/add`}>
                     <Button size="sm" variant="outline">+ Exercise</Button>
                   </Link>
