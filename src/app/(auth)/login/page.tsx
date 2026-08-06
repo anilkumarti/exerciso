@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useActionState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -7,17 +8,10 @@ import { login } from '@/lib/actions/auth'
 import { AuthField } from '@/components/auth/auth-field'
 import { SubmitButton } from '@/components/auth/submit-button'
 
-export default function LoginPage() {
-  const [state, action] = useActionState(login, {})
+function ParamBanners() {
   const params = useSearchParams()
-
   return (
-    <div className="space-y-6">
-      <div className="space-y-1 text-center">
-        <h1 className="text-xl font-semibold">Welcome back</h1>
-        <p className="text-sm text-muted-foreground">Sign in to your account</p>
-      </div>
-
+    <>
       {params.get('confirmed') && (
         <p className="rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">
           Account created! Check your email to confirm, then sign in.
@@ -28,6 +22,23 @@ export default function LoginPage() {
           Password updated. Sign in with your new password.
         </p>
       )}
+    </>
+  )
+}
+
+export default function LoginPage() {
+  const [state, action] = useActionState(login, {})
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-1 text-center">
+        <h1 className="text-xl font-semibold">Welcome back</h1>
+        <p className="text-sm text-muted-foreground">Sign in to your account</p>
+      </div>
+
+      <Suspense>
+        <ParamBanners />
+      </Suspense>
 
       <form action={action} className="space-y-4">
         {state.error && (
