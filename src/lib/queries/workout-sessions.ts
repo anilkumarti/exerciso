@@ -60,17 +60,6 @@ export async function getSession(id: string): Promise<SessionRow | null> {
   }
 }
 
-export async function getActiveSession(): Promise<{ id: string } | null> {
-  const supabase = await getSupabaseServerClient()
-  const { data } = await supabase
-    .from('workout_sessions')
-    .select('id')
-    .eq('status', 'in_progress')
-    .limit(1)
-    .maybeSingle()
-  return data as { id: string } | null
-}
-
 export interface HistoryRow {
   id: string
   plan_day_name_snapshot: string | null
@@ -91,7 +80,7 @@ export async function getSessionHistory(): Promise<HistoryRow[]> {
     `)
     .neq('status', 'in_progress')
     .order('started_at', { ascending: false })
-    .limit(20)
+    .limit(100)
 
   if (error) return []
   return ((data ?? []) as (HistoryRow & { exercises: { id: string }[] })[]).map((s) => ({

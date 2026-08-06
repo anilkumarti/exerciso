@@ -1,7 +1,6 @@
+import { redirect } from 'next/navigation'
+
+// Goals are edited on the main settings screen.
 export default function Page() {
-  return (
-    <div className="flex min-h-svh items-center justify-center">
-      <p className="text-muted-foreground">Coming soon</p>
-    </div>
-  )
+  redirect('/settings/profile')
 }

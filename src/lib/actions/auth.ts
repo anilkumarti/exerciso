@@ -50,7 +50,7 @@ export async function login(
     return { error: 'Invalid email or password' }
   }
 
-  redirect('/')
+  redirect('/dashboard')
 }
 
 export async function signup(

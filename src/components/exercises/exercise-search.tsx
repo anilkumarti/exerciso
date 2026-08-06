@@ -1,7 +1,8 @@
 'use client'
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { useTransition, useOptimistic } from 'react'
+import { useEffect, useRef, useTransition } from 'react'
+import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import type { MuscleGroup, EquipmentType } from '@/types/exercises'
 import { MUSCLE_GROUP_LABELS, EQUIPMENT_LABELS } from '@/types/exercises'
@@ -21,6 +22,16 @@ export function ExerciseSearch() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
+  // Per-instance debounce timer; a module/global timer would be shared across
+  // mounts and cancel the wrong pending search.
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    },
+    []
+  )
 
   const currentSearch = searchParams.get('search') ?? ''
   const currentMuscle = searchParams.get('muscle') as MuscleGroup | null
@@ -40,20 +51,23 @@ export function ExerciseSearch() {
 
   return (
     <div className="space-y-3">
-      <Input
-        type="search"
-        placeholder="Search exercises…"
-        defaultValue={currentSearch}
-        className="h-11 text-base"
-        onChange={(e) => {
-          const val = e.target.value
-          clearTimeout((globalThis as Record<string, unknown>)._exerciseSearchTimer as ReturnType<typeof setTimeout>)
-          ;(globalThis as Record<string, unknown>)._exerciseSearchTimer = setTimeout(
-            () => updateParam('search', val || null),
-            300
-          )
-        }}
-      />
+      <div className="relative">
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search exercises…"
+          defaultValue={currentSearch}
+          className="h-11 pl-9 text-base"
+          onChange={(e) => {
+            const val = e.target.value
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            debounceRef.current = setTimeout(
+              () => updateParam('search', val || null),
+              300
+            )
+          }}
+        />
+      </div>
 
       {/* Muscle filter chips */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -108,10 +122,10 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        'touch-target shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+        'shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
         active
           ? 'border-primary bg-primary text-primary-foreground'
-          : 'border-border bg-muted/50 text-muted-foreground hover:bg-muted'
+          : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
       )}
     >
       {label}

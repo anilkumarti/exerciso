@@ -33,6 +33,6 @@ export async function updateProfile(_: unknown, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/settings/profile')
-  revalidatePath('/')
+  revalidatePath('/dashboard')
   return { success: true }
 }

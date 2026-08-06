@@ -12,17 +12,31 @@ async function getUser() {
   return { supabase, user }
 }
 
-export async function startSession(planId: string, planDayId: string, dayName: string) {
+/**
+ * The dashboard shows the in-progress banner, weekly count and recent
+ * sessions, so every session mutation has to invalidate it too.
+ */
+function revalidateSessions(sessionId?: string) {
+  revalidatePath('/dashboard')
+  revalidatePath('/workout')
+  revalidatePath('/workout/history')
+  if (sessionId) revalidatePath(`/workout/session/${sessionId}`)
+}
+
+export async function startSession(
+  planId: string,
+  planDayId: string,
+  dayName: string
+) {
   const { supabase, user } = await getUser()
 
-  // Abandon any existing in_progress session
+  // Only one session can be live at a time — retire any earlier one first
   await supabase
     .from('workout_sessions')
     .update({ status: 'abandoned' })
     .eq('user_id', user.id)
     .eq('status', 'in_progress')
 
-  // Create the session
   const { data: session, error } = await supabase
     .from('workout_sessions')
     .insert({
@@ -37,7 +51,7 @@ export async function startSession(planId: string, planDayId: string, dayName: s
 
   if (error) throw new Error(error.message)
 
-  // Load plan exercises for this day and create session_exercises
+  // Snapshot the plan's exercises into the session
   const plan = await getWorkoutPlan(planId)
   const day = plan?.days.find((d) => d.id === planDayId)
 
@@ -51,19 +65,33 @@ export async function startSession(planId: string, planDayId: string, dayName: s
       exercise_order: ex.exercise_order,
     }))
 
-    await supabase.from('session_exercises').insert(sessionExercises)
+    const { error: seedError } = await supabase
+      .from('session_exercises')
+      .insert(sessionExercises)
+    if (seedError) throw new Error(seedError.message)
   }
 
+  revalidateSessions()
   redirect(`/workout/session/${session.id}`)
 }
 
-export async function logSet(sessionExerciseId: string, sessionId: string, setNumber: number, formData: FormData) {
+export async function logSet(
+  sessionExerciseId: string,
+  sessionId: string,
+  setNumber: number,
+  formData: FormData
+) {
   const { supabase, user } = await getUser()
 
-  const weight_kg = formData.get('weight_kg') ? parseFloat(formData.get('weight_kg') as string) : null
-  const reps = formData.get('reps') ? parseInt(formData.get('reps') as string) : null
+  const weightRaw = formData.get('weight_kg') as string
+  const repsRaw = formData.get('reps') as string
+  const weight_kg = weightRaw ? parseFloat(weightRaw) : null
+  const reps = repsRaw ? parseInt(repsRaw) : null
 
-  await supabase.from('exercise_sets').insert({
+  // Nothing to record — avoid inserting an empty set row
+  if (weight_kg === null && reps === null) return
+
+  const { error } = await supabase.from('exercise_sets').insert({
     session_exercise_id: sessionExerciseId,
     user_id: user.id,
     set_number: setNumber,
@@ -72,32 +100,42 @@ export async function logSet(sessionExerciseId: string, sessionId: string, setNu
     is_completed: true,
   })
 
+  if (error) throw new Error(error.message)
   revalidatePath(`/workout/session/${sessionId}`)
 }
 
 export async function finishSession(sessionId: string, startedAt: string) {
   const { supabase } = await getUser()
 
-  const duration_seconds = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000)
+  const duration_seconds = Math.floor(
+    (Date.now() - new Date(startedAt).getTime()) / 1000
+  )
 
-  await supabase
+  const { error } = await supabase
     .from('workout_sessions')
-    .update({ status: 'completed', completed_at: new Date().toISOString(), duration_seconds })
+    .update({
+      status: 'completed',
+      completed_at: new Date().toISOString(),
+      duration_seconds,
+    })
     .eq('id', sessionId)
 
-  revalidatePath('/workout')
-  revalidatePath('/workout/history')
+  if (error) throw new Error(error.message)
+
+  revalidateSessions(sessionId)
   redirect('/workout/history')
 }
 
 export async function abandonSession(sessionId: string) {
   const { supabase } = await getUser()
 
-  await supabase
+  const { error } = await supabase
     .from('workout_sessions')
     .update({ status: 'abandoned' })
     .eq('id', sessionId)
 
-  revalidatePath('/workout')
+  if (error) throw new Error(error.message)
+
+  revalidateSessions(sessionId)
   redirect('/workout')
 }

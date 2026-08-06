@@ -1,0 +1,19 @@
+{
+  "name": "Exerciso",
+  "short_name": "Exerciso",
+  "description": "Personal gym and fitness assistant",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F6FB",
+  "theme_color": "#5B3DF5",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

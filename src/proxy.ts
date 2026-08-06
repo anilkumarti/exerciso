@@ -33,16 +33,20 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/reset-password')
 
-  if (!user && !isAuthRoute) {
+  // "/" is the public landing page — reachable signed out, and it redirects
+  // signed-in visitors to /dashboard itself, so the proxy leaves it alone.
+  const isPublicRoute = pathname === '/'
+
+  if (!user && !isAuthRoute && !isPublicRoute) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/login'
     return NextResponse.redirect(loginUrl)
   }
 
   if (user && isAuthRoute) {
-    const homeUrl = request.nextUrl.clone()
-    homeUrl.pathname = '/'
-    return NextResponse.redirect(homeUrl)
+    const dashboardUrl = request.nextUrl.clone()
+    dashboardUrl.pathname = '/dashboard'
+    return NextResponse.redirect(dashboardUrl)
   }
 
   return supabaseResponse

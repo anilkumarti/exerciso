@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 import type { Exercise } from '@/types/exercises'
 import { MUSCLE_GROUP_LABELS, EQUIPMENT_LABELS } from '@/types/exercises'
 
@@ -13,22 +14,25 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
   return (
     <Link
       href={`/exercises/${exercise.id}`}
-      className="block rounded-xl border border-border bg-card p-4 active:bg-muted/50"
+      className="surface block p-4 transition-colors hover:bg-muted/40 active:bg-muted/60"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium text-foreground">{exercise.name}</p>
+          <p className="truncate font-medium">{exercise.name}</p>
           {primaryMuscles.length > 0 && (
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {primaryMuscles.map((m) => MUSCLE_GROUP_LABELS[m.muscle_group]).join(', ')}
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+              {primaryMuscles
+                .map((m) => MUSCLE_GROUP_LABELS[m.muscle_group])
+                .join(', ')}
             </p>
           )}
         </div>
         {equipment && (
-          <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+          <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
             {EQUIPMENT_LABELS[equipment.equipment_type]}
           </span>
         )}
+        <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
       </div>
 
       {exercise.description && (

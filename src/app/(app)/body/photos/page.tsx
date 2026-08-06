@@ -1,7 +1,11 @@
+import { ComingSoon } from '@/components/shared/coming-soon'
+
 export default function Page() {
   return (
-    <div className="flex min-h-svh items-center justify-center">
-      <p className="text-muted-foreground">Coming soon</p>
-    </div>
+    <ComingSoon
+      title="Progress photos"
+      description="Side-by-side comparisons of your progress."
+      backHref="/body"
+    />
   )
 }

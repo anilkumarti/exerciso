@@ -1,13 +1,22 @@
 'use client'
 
 import { useActionState } from 'react'
+import { CircleAlert, CircleCheck } from 'lucide-react'
 import { updateProfile } from '@/lib/actions/profile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { ThemeToggle } from '@/components/shared/theme-toggle'
 import type { Profile } from '@/lib/queries/profile'
 
-const WEIGHT_UNITS = [{ value: 'kg', label: 'kg' }, { value: 'lbs', label: 'lbs' }]
-const HEIGHT_UNITS = [{ value: 'cm', label: 'cm' }, { value: 'ft_in', label: 'ft/in' }]
+const WEIGHT_UNITS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'lbs', label: 'lbs' },
+]
+const HEIGHT_UNITS = [
+  { value: 'cm', label: 'cm' },
+  { value: 'ft_in', label: 'ft / in' },
+]
 const FITNESS_GOALS = [
   { value: 'lose_weight', label: 'Lose weight' },
   { value: 'build_muscle', label: 'Build muscle' },
@@ -23,90 +32,125 @@ const ACTIVITY_LEVELS = [
   { value: 'extra_active', label: 'Extra active', desc: 'Physical job + training' },
 ]
 
+/** Section wrapper — consistent card treatment for each settings group. */
+function Section({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <section>
+      <h2 className="mb-2 px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        {title}
+      </h2>
+      <div className="surface flex flex-col gap-4 p-4">{children}</div>
+    </section>
+  )
+}
+
+/** Segmented pill control used for the unit toggles. */
+function Segmented({
+  name,
+  options,
+  current,
+}: {
+  name: string
+  options: { value: string; label: string }[]
+  current: string
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
+      {options.map((o) => (
+        <label key={o.value} className="contents">
+          <input
+            type="radio"
+            name={name}
+            value={o.value}
+            defaultChecked={current === o.value}
+            className="peer sr-only"
+          />
+          <span className="cursor-pointer rounded-lg py-2 text-center text-sm font-medium text-muted-foreground transition-colors peer-checked:bg-card peer-checked:text-foreground peer-checked:shadow-card">
+            {o.label}
+          </span>
+        </label>
+      ))}
+    </div>
+  )
+}
+
 export function ProfileForm({ profile }: { profile: Profile | null }) {
   const [state, action, isPending] = useActionState(updateProfile, null)
 
   return (
-    <form action={action} className="flex flex-col gap-8">
+    <form action={action} className="flex flex-col gap-6">
       {state?.error && (
-        <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">{state.error}</p>
+        <p className="flex items-start gap-2 rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <CircleAlert className="mt-0.5 size-4 shrink-0" />
+          {state.error}
+        </p>
       )}
       {state?.success && (
-        <p className="rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">Saved!</p>
+        <p className="flex items-center gap-2 rounded-xl bg-success/10 px-4 py-3 text-sm font-medium text-[var(--success)]">
+          <CircleCheck className="size-4 shrink-0" />
+          Settings saved
+        </p>
       )}
 
-      {/* Profile section */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Profile</h2>
-
+      <Section title="Profile">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium" htmlFor="display_name">Display name</label>
+          <Label htmlFor="display_name">Display name</Label>
           <Input
             id="display_name"
             name="display_name"
             placeholder="Your name"
             defaultValue={profile?.display_name ?? ''}
+            className="h-11 text-base"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium" htmlFor="date_of_birth">Date of birth</label>
+          <Label htmlFor="date_of_birth">Date of birth</Label>
           <Input
             id="date_of_birth"
             name="date_of_birth"
             type="date"
             defaultValue={profile?.date_of_birth ?? ''}
+            className="h-11 text-base"
           />
         </div>
-      </section>
+      </Section>
 
-      {/* Units section */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Units</h2>
-
+      <Section title="Appearance">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Weight unit</label>
-          <div className="flex gap-2">
-            {WEIGHT_UNITS.map((u) => (
-              <label key={u.value} className="flex-1">
-                <input
-                  type="radio"
-                  name="weight_unit"
-                  value={u.value}
-                  defaultChecked={(profile?.weight_unit ?? 'kg') === u.value}
-                  className="sr-only peer"
-                />
-                <span className="flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary hover:bg-muted">
-                  {u.label}
-                </span>
-              </label>
-            ))}
-          </div>
+          <Label>Theme</Label>
+          <ThemeToggle />
+        </div>
+      </Section>
+
+      <Section title="Units">
+        <div className="flex flex-col gap-1.5">
+          <Label>Weight unit</Label>
+          <Segmented
+            name="weight_unit"
+            options={WEIGHT_UNITS}
+            current={profile?.weight_unit ?? 'kg'}
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Height unit</label>
-          <div className="flex gap-2">
-            {HEIGHT_UNITS.map((u) => (
-              <label key={u.value} className="flex-1">
-                <input
-                  type="radio"
-                  name="height_unit"
-                  value={u.value}
-                  defaultChecked={(profile?.height_unit ?? 'cm') === u.value}
-                  className="sr-only peer"
-                />
-                <span className="flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-medium cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary hover:bg-muted">
-                  {u.label}
-                </span>
-              </label>
-            ))}
-          </div>
+          <Label>Height unit</Label>
+          <Segmented
+            name="height_unit"
+            options={HEIGHT_UNITS}
+            current={profile?.height_unit ?? 'cm'}
+          />
         </div>
 
         <div className="flex gap-3">
-          <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-sm font-medium" htmlFor="height_cm">Height (cm)</label>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="height_cm">Height (cm)</Label>
             <Input
               id="height_cm"
               name="height_cm"
@@ -114,12 +158,14 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
               min="100"
               max="250"
               step="0.1"
+              inputMode="decimal"
               placeholder="175"
               defaultValue={profile?.height_cm ?? ''}
+              className="tabular h-11 text-base"
             />
           </div>
-          <div className="flex flex-col gap-1.5 flex-1">
-            <label className="text-sm font-medium" htmlFor="goal_weight_kg">Goal weight (kg)</label>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="goal_weight_kg">Goal weight (kg)</Label>
             <Input
               id="goal_weight_kg"
               name="goal_weight_kg"
@@ -127,19 +173,18 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
               min="30"
               max="300"
               step="0.1"
+              inputMode="decimal"
               placeholder="75"
               defaultValue={profile?.goal_weight_kg ?? ''}
+              className="tabular h-11 text-base"
             />
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* Goals section */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Goals</h2>
-
+      <Section title="Goals">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Fitness goal</label>
+          <Label>Fitness goal</Label>
           <div className="flex flex-wrap gap-2">
             {FITNESS_GOALS.map((g) => (
               <label key={g.value}>
@@ -147,10 +192,12 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
                   type="radio"
                   name="fitness_goal"
                   value={g.value}
-                  defaultChecked={(profile?.fitness_goal ?? 'build_muscle') === g.value}
-                  className="sr-only peer"
+                  defaultChecked={
+                    (profile?.fitness_goal ?? 'build_muscle') === g.value
+                  }
+                  className="peer sr-only"
                 />
-                <span className="flex items-center justify-center rounded-full border px-3 py-1.5 text-sm font-medium cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary hover:bg-muted">
+                <span className="flex cursor-pointer items-center justify-center rounded-full border border-border px-3 py-1.5 text-sm font-medium transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground hover:bg-muted">
                   {g.label}
                 </span>
               </label>
@@ -159,27 +206,39 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Activity level</label>
-          {ACTIVITY_LEVELS.map((a) => (
-            <label key={a.value} className="flex items-center gap-3 rounded-xl border p-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
-              <input
-                type="radio"
-                name="activity_level"
-                value={a.value}
-                defaultChecked={(profile?.activity_level ?? 'moderately_active') === a.value}
-                className="accent-primary"
-              />
-              <div>
-                <p className="text-sm font-medium">{a.label}</p>
-                <p className="text-xs text-muted-foreground">{a.desc}</p>
-              </div>
-            </label>
-          ))}
+          <Label>Activity level</Label>
+          <div className="flex flex-col gap-2">
+            {ACTIVITY_LEVELS.map((a) => (
+              <label
+                key={a.value}
+                className="flex cursor-pointer items-center gap-3 rounded-xl border border-border p-3 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+              >
+                <input
+                  type="radio"
+                  name="activity_level"
+                  value={a.value}
+                  defaultChecked={
+                    (profile?.activity_level ?? 'moderately_active') === a.value
+                  }
+                  className="accent-primary"
+                />
+                <div>
+                  <p className="text-sm font-medium">{a.label}</p>
+                  <p className="text-xs text-muted-foreground">{a.desc}</p>
+                </div>
+              </label>
+            ))}
+          </div>
         </div>
-      </section>
+      </Section>
 
-      <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? 'Saving…' : 'Save'}
+      <Button
+        type="submit"
+        size="lg"
+        disabled={isPending}
+        className="h-11 w-full"
+      >
+        {isPending ? 'Saving…' : 'Save changes'}
       </Button>
     </form>
   )

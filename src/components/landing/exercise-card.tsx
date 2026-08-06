@@ -1,0 +1,111 @@
+'use client'
+
+import { Check, Play } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced'
+export type Category = 'push' | 'pull' | 'legs'
+
+export interface Exercise {
+  id: string
+  name: string
+  muscles: string[]
+  difficulty: Difficulty
+  description: string
+  formTips: string[]
+  youtubeId: string
+  category: Category
+}
+
+const CATEGORY_ACCENT: Record<Category, string> = {
+  push: 'border-t-blue-500',
+  pull: 'border-t-emerald-500',
+  legs: 'border-t-amber-500',
+}
+
+const CATEGORY_CHIP: Record<Category, string> = {
+  push: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+  pull: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  legs: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+}
+
+const DIFFICULTY_CHIP: Record<Difficulty, string> = {
+  Beginner: 'bg-green-500/10 text-green-700 dark:text-green-400',
+  Intermediate: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  Advanced: 'bg-red-500/10 text-red-700 dark:text-red-400',
+}
+
+interface ExerciseCardProps {
+  exercise: Exercise
+  onWatch: (exercise: Exercise) => void
+}
+
+export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
+  return (
+    <div
+      className={cn(
+        'surface flex flex-col border-t-2 transition-shadow duration-200 hover:shadow-raised',
+        CATEGORY_ACCENT[exercise.category],
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between gap-2 p-4 pb-2">
+        <h3 className="text-base font-semibold leading-snug">{exercise.name}</h3>
+        <span
+          className={cn(
+            'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
+            DIFFICULTY_CHIP[exercise.difficulty],
+          )}
+        >
+          {exercise.difficulty}
+        </span>
+      </div>
+
+      {/* Muscle chips */}
+      <div className="flex flex-wrap gap-1.5 px-4 pb-3">
+        {exercise.muscles.map(m => (
+          <span
+            key={m}
+            className={cn('rounded-full px-2 py-0.5 text-xs font-medium', CATEGORY_CHIP[exercise.category])}
+          >
+            {m}
+          </span>
+        ))}
+      </div>
+
+      {/* Description */}
+      <p className="line-clamp-3 px-4 pb-3 text-sm text-muted-foreground">
+        {exercise.description}
+      </p>
+
+      {/* Form tips */}
+      <div className="flex-1 border-t border-border px-4 py-3">
+        <p className="mb-2 text-[0.6875rem] font-semibold tracking-wide text-foreground uppercase">
+          Key Form Tips
+        </p>
+        <ul className="flex flex-col gap-1.5">
+          {exercise.formTips.map((tip, i) => (
+            <li key={i} className="flex gap-2 text-xs text-muted-foreground">
+              <Check className="mt-0.5 size-3.5 shrink-0 text-green-500" />
+              {tip}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Watch button */}
+      <div className="px-4 pb-4 pt-3">
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full gap-2 font-medium"
+          onClick={() => onWatch(exercise)}
+        >
+          <Play className="size-3.5 fill-current" />
+          Watch Tutorial
+        </Button>
+      </div>
+    </div>
+  )
+}

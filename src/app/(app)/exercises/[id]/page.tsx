@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ChevronRight, Play } from 'lucide-react'
 import { getExercise } from '@/lib/queries/exercises'
 import { MUSCLE_GROUP_LABELS, EQUIPMENT_LABELS } from '@/types/exercises'
+import { PageShell, PageHeader } from '@/components/shared/page-shell'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -15,57 +17,55 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
 
   const primaryMuscles = exercise.muscles?.filter((m) => m.is_primary) ?? []
   const secondaryMuscles = exercise.muscles?.filter((m) => !m.is_primary) ?? []
-  const primaryVideo = exercise.videos?.find((v) => v.is_primary) ?? exercise.videos?.[0]
+  const primaryVideo =
+    exercise.videos?.find((v) => v.is_primary) ?? exercise.videos?.[0]
 
   return (
-    <div className="flex flex-col">
-      {/* Back nav */}
-      <div className="flex items-center gap-2 border-b border-border px-4 pb-3 pt-safe">
-        <Link
-          href="/exercises"
-          className="touch-target -ml-2 flex items-center gap-1 text-sm text-muted-foreground"
-          aria-label="Back to exercises"
-        >
-          ← Back
-        </Link>
-      </div>
+    <PageShell>
+      <PageHeader
+        title={exercise.name}
+        subtitle={exercise.description ?? undefined}
+        backHref="/exercises"
+      />
 
-      <div className="space-y-6 px-4 py-4">
-        {/* Title */}
-        <div>
-          <h1 className="text-2xl font-bold">{exercise.name}</h1>
-          {exercise.description && (
-            <p className="mt-2 text-muted-foreground">{exercise.description}</p>
-          )}
-        </div>
-
-        {/* YouTube video thumbnail */}
+      <div className="flex flex-col gap-6">
+        {/* Video */}
         {primaryVideo && (
           <a
             href={`https://www.youtube.com/watch?v=${primaryVideo.youtube_id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block overflow-hidden rounded-xl"
+            className="group surface block overflow-hidden"
           >
-            <img
-              src={`https://img.youtube.com/vi/${primaryVideo.youtube_id}/mqdefault.jpg`}
-              alt={primaryVideo.title ?? `${exercise.name} demo`}
-              className="w-full object-cover"
-              loading="lazy"
-            />
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://img.youtube.com/vi/${primaryVideo.youtube_id}/mqdefault.jpg`}
+                alt={primaryVideo.title ?? `${exercise.name} demo`}
+                className="aspect-video w-full object-cover"
+                loading="lazy"
+              />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/25 transition-colors group-hover:bg-black/35">
+                <span className="flex size-14 items-center justify-center rounded-full bg-white/95 text-black shadow-raised">
+                  <Play className="size-6 fill-current" />
+                </span>
+              </span>
+            </div>
             {primaryVideo.title && (
-              <p className="mt-1 text-xs text-muted-foreground">{primaryVideo.title}</p>
+              <p className="px-4 py-2.5 text-xs text-muted-foreground">
+                {primaryVideo.title}
+              </p>
             )}
           </a>
         )}
 
         {/* Muscles */}
         {(primaryMuscles.length > 0 || secondaryMuscles.length > 0) && (
-          <div className="space-y-3">
-            <h2 className="font-semibold">Muscles</h2>
+          <section className="surface flex flex-col gap-3 p-4">
+            <h2 className="text-sm font-semibold">Muscles worked</h2>
             {primaryMuscles.length > 0 && (
               <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                   Primary
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -82,7 +82,7 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
             )}
             {secondaryMuscles.length > 0 && (
               <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                   Secondary
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -97,13 +97,13 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
                 </div>
               </div>
             )}
-          </div>
+          </section>
         )}
 
         {/* Equipment */}
         {exercise.equipment && exercise.equipment.length > 0 && (
-          <div className="space-y-2">
-            <h2 className="font-semibold">Equipment</h2>
+          <section className="surface flex flex-col gap-2 p-4">
+            <h2 className="text-sm font-semibold">Equipment</h2>
             <div className="flex flex-wrap gap-2">
               {exercise.equipment.map((e) => (
                 <span
@@ -114,45 +114,49 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
                 </span>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {/* Instructions */}
         {exercise.instructions && (
-          <div className="space-y-2">
-            <h2 className="font-semibold">How to perform</h2>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+          <section className="surface flex flex-col gap-2 p-4">
+            <h2 className="text-sm font-semibold">How to perform</h2>
+            <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground">
               {exercise.instructions}
             </p>
-          </div>
+          </section>
         )}
 
         {/* Alternatives */}
         {exercise.alternatives && exercise.alternatives.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="font-semibold">Alternatives</h2>
-            <div className="space-y-2">
+          <section>
+            <h2 className="mb-2 text-sm font-semibold">Alternatives</h2>
+            <ul className="surface divide-y divide-border overflow-hidden">
               {exercise.alternatives.map((alt) => (
-                <Link
-                  key={alt.id}
-                  href={`/exercises/${alt.id}`}
-                  className="block rounded-xl border border-border bg-card px-4 py-3"
-                >
-                  <p className="font-medium">{alt.name}</p>
-                  {alt.muscles && alt.muscles.length > 0 && (
-                    <p className="text-sm text-muted-foreground">
-                      {alt.muscles
-                        .filter((m) => m.is_primary)
-                        .map((m) => MUSCLE_GROUP_LABELS[m.muscle_group])
-                        .join(', ')}
-                    </p>
-                  )}
-                </Link>
+                <li key={alt.id}>
+                  <Link
+                    href={`/exercises/${alt.id}`}
+                    className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{alt.name}</p>
+                      {alt.muscles && alt.muscles.length > 0 && (
+                        <p className="truncate text-xs text-muted-foreground">
+                          {alt.muscles
+                            .filter((m) => m.is_primary)
+                            .map((m) => MUSCLE_GROUP_LABELS[m.muscle_group])
+                            .join(', ')}
+                        </p>
+                      )}
+                    </div>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                  </Link>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
         )}
       </div>
-    </div>
+    </PageShell>
   )
 }

@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import { ChevronRight, Search } from 'lucide-react'
 import { getExercises } from '@/lib/queries/exercises'
 import { addExerciseToDay } from '@/lib/actions/workout-plans'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PageShell, PageHeader } from '@/components/shared/page-shell'
 
 export default async function AddExercisePage({
   params,
@@ -17,76 +19,110 @@ export default async function AddExercisePage({
 
   const exercises = await getExercises({ search: q })
 
+  // Step 2 — configure sets/reps/rest for the chosen exercise
   if (selectedId && selectedName) {
     const action = addExerciseToDay.bind(null, dayId, id, selectedId)
     return (
-      <div className="px-4 pb-6 pt-8 max-w-lg mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href={`/workout/plans/${id}/days/${dayId}/add`} className="text-muted-foreground hover:text-foreground">
-            ← Back
-          </Link>
-          <h1 className="text-xl font-bold">Configure Exercise</h1>
-        </div>
+      <PageShell>
+        <PageHeader
+          title="Configure"
+          subtitle="Set your targets for this exercise."
+          backHref={`/workout/plans/${id}/days/${dayId}/add`}
+        />
 
-        <div className="rounded-2xl border bg-card p-4 mb-6">
+        <div className="surface mb-6 p-4">
           <p className="font-semibold">{selectedName}</p>
         </div>
 
-        <form action={action} className="flex flex-col gap-5">
-          <div className="flex gap-4">
-            <div className="flex flex-col gap-1.5 flex-1">
+        <form action={action} className="flex flex-col gap-6">
+          <div className="flex gap-3">
+            <div className="flex flex-1 flex-col gap-1.5">
               <Label htmlFor="target_sets">Sets</Label>
-              <Input id="target_sets" name="target_sets" type="number" min={1} max={20} defaultValue={3} />
+              <Input
+                id="target_sets"
+                name="target_sets"
+                type="number"
+                min={1}
+                max={20}
+                defaultValue={3}
+                inputMode="numeric"
+                className="tabular h-11 text-base"
+              />
             </div>
-            <div className="flex flex-col gap-1.5 flex-1">
+            <div className="flex flex-1 flex-col gap-1.5">
               <Label htmlFor="target_reps">Reps</Label>
-              <Input id="target_reps" name="target_reps" placeholder="e.g. 8-12" defaultValue="8-12" />
+              <Input
+                id="target_reps"
+                name="target_reps"
+                placeholder="8-12"
+                defaultValue="8-12"
+                className="tabular h-11 text-base"
+              />
             </div>
-            <div className="flex flex-col gap-1.5 flex-1">
+            <div className="flex flex-1 flex-col gap-1.5">
               <Label htmlFor="rest_seconds">Rest (s)</Label>
-              <Input id="rest_seconds" name="rest_seconds" type="number" min={0} max={600} defaultValue={90} />
+              <Input
+                id="rest_seconds"
+                name="rest_seconds"
+                type="number"
+                min={0}
+                max={600}
+                defaultValue={90}
+                inputMode="numeric"
+                className="tabular h-11 text-base"
+              />
             </div>
           </div>
-          <Button type="submit">Add to Day</Button>
+          <Button type="submit" size="lg" className="h-11 w-full">
+            Add to day
+          </Button>
         </form>
-      </div>
+      </PageShell>
     )
   }
 
+  // Step 1 — pick an exercise
   return (
-    <div className="px-4 pb-6 pt-8 max-w-lg mx-auto">
-      <div className="flex items-center gap-3 mb-4">
-        <Link href={`/workout/plans/${id}`} className="text-muted-foreground hover:text-foreground">
-          ← Back
-        </Link>
-        <h1 className="text-xl font-bold">Add Exercise</h1>
-      </div>
+    <PageShell>
+      <PageHeader title="Add exercise" backHref={`/workout/plans/${id}`} />
 
       <form className="mb-4">
-        <input type="hidden" name="exercise" value="" />
-        <Input name="q" defaultValue={q ?? ''} placeholder="Search exercises…" autoFocus />
+        <div className="relative">
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            name="q"
+            defaultValue={q ?? ''}
+            placeholder="Search exercises…"
+            autoFocus
+            className="h-11 pl-9 text-base"
+          />
+        </div>
       </form>
 
-      <div className="flex flex-col gap-1">
-        {exercises.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">No exercises found.</p>
-        )}
-        {exercises.map((ex) => (
-          <Link
-            key={ex.id}
-            href={`/workout/plans/${id}/days/${dayId}/add?exercise=${ex.id}&name=${encodeURIComponent(ex.name)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
-            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-colors"
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{ex.name}</p>
-              <p className="text-xs text-muted-foreground capitalize">
-                {ex.muscles?.map((m) => m.muscle_group).join(', ')}
-              </p>
-            </div>
-            <span className="text-muted-foreground text-sm">›</span>
-          </Link>
-        ))}
-      </div>
-    </div>
+      {exercises.length === 0 ? (
+        <p className="py-10 text-center text-sm text-muted-foreground">
+          No exercises found.
+        </p>
+      ) : (
+        <ul className="surface divide-y divide-border overflow-hidden">
+          {exercises.map((ex) => (
+            <li key={ex.id}>
+              <Link
+                href={`/workout/plans/${id}/days/${dayId}/add?exercise=${ex.id}&name=${encodeURIComponent(ex.name)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{ex.name}</p>
+                  <p className="truncate text-xs text-muted-foreground capitalize">
+                    {ex.muscles?.map((m) => m.muscle_group).join(', ')}
+                  </p>
+                </div>
+                <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </PageShell>
   )
 }

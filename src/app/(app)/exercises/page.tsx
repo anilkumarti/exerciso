@@ -1,7 +1,9 @@
 import { Suspense } from 'react'
+import { SearchX } from 'lucide-react'
 import { getExercises } from '@/lib/queries/exercises'
 import { ExerciseSearch } from '@/components/exercises/exercise-search'
 import { ExerciseCard } from '@/components/exercises/exercise-card'
+import { EmptyState } from '@/components/shared/page-shell'
 import type { MuscleGroup, EquipmentType } from '@/types/exercises'
 
 interface PageProps {
@@ -21,26 +23,32 @@ export default async function ExercisesPage({ searchParams }: PageProps) {
   })
 
   return (
-    <div className="flex flex-col gap-0">
-      {/* Sticky header */}
-      <div className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm px-4 pb-3 pt-safe">
-        <h1 className="mb-3 pt-4 text-xl font-bold">Exercises</h1>
-        <Suspense>
-          <ExerciseSearch />
-        </Suspense>
+    <div className="flex flex-col">
+      {/* Sticky search header */}
+      <div className="glass pt-safe sticky top-0 z-20 border-b border-border">
+        <div className="mx-auto w-full max-w-lg px-4 pb-3">
+          <h1 className="pt-7 pb-3 text-[1.75rem] leading-tight font-bold">
+            Exercises
+          </h1>
+          <Suspense>
+            <ExerciseSearch />
+          </Suspense>
+        </div>
       </div>
 
       {/* Exercise list */}
-      <div className="px-4 py-4">
+      <div className="mx-auto w-full max-w-lg px-4 py-4">
         {exercises.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-16 text-center">
-            <p className="text-muted-foreground">No exercises found</p>
-            <p className="text-sm text-muted-foreground">Try adjusting your filters</p>
-          </div>
+          <EmptyState
+            icon={SearchX}
+            title="No exercises found"
+            description="Try adjusting your search or filters."
+          />
         ) : (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              {exercises.length} exercise{exercises.length !== 1 ? 's' : ''}
+          <div className="animate-rise space-y-3">
+            <p className="px-1 text-sm text-muted-foreground">
+              {exercises.length}{' '}
+              {exercises.length === 1 ? 'exercise' : 'exercises'}
             </p>
             {exercises.map((exercise) => (
               <ExerciseCard key={exercise.id} exercise={exercise} />

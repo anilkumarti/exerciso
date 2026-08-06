@@ -1,51 +1,122 @@
 import Link from 'next/link'
+import { ChevronRight, Dumbbell, History, Timer } from 'lucide-react'
 import { getSessionHistory } from '@/lib/queries/workout-sessions'
+import { Button } from '@/components/ui/button'
+import { EmptyState, PageShell, PageHeader } from '@/components/shared/page-shell'
 
 function formatDuration(seconds: number | null) {
-  if (!seconds) return '—'
+  if (!seconds) return null
   const m = Math.floor(seconds / 60)
   return `${m}m`
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+/** Groups sessions under "This week" / "Earlier" for easier scanning. */
+function bucketOf(iso: string) {
+  const d = new Date(iso)
+  const weekAgo = new Date()
+  weekAgo.setDate(weekAgo.getDate() - 7)
+  return d >= weekAgo ? 'This week' : 'Earlier'
 }
 
 export default async function HistoryPage() {
   const sessions = await getSessionHistory()
 
+  const groups = sessions.reduce<Record<string, typeof sessions>>((acc, s) => {
+    const key = bucketOf(s.started_at)
+    ;(acc[key] ??= []).push(s)
+    return acc
+  }, {})
+
   return (
-    <div className="px-4 pb-6 pt-8">
-      <h1 className="text-2xl font-bold mb-6">Workout History</h1>
+    <PageShell>
+      <PageHeader
+        title="History"
+        subtitle={
+          sessions.length > 0
+            ? `${sessions.length} ${sessions.length === 1 ? 'workout' : 'workouts'} logged`
+            : undefined
+        }
+        backHref="/workout"
+      />
 
       {sessions.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center gap-3">
-          <p className="text-4xl">📋</p>
-          <p className="font-semibold text-lg">No workouts yet</p>
-          <p className="text-muted-foreground text-sm">Completed workouts will appear here.</p>
-          <Link href="/workout" className="text-sm text-primary hover:underline mt-2">Go to Plans →</Link>
-        </div>
+        <EmptyState
+          icon={History}
+          title="No workouts yet"
+          description="Completed workouts will appear here."
+          action={
+            <Link href="/workout">
+              <Button size="sm">Go to plans</Button>
+            </Link>
+          }
+        />
       )}
 
-      <div className="flex flex-col gap-3">
-        {sessions.map((s) => (
-          <Link key={s.id} href={`/workout/session/${s.id}`} className="block">
-            <div className="rounded-2xl border bg-card p-4 hover:bg-muted/40 transition-colors">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-semibold">{s.plan_day_name_snapshot ?? 'Workout'}</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {formatDate(s.started_at)} · {s.exercise_count} exercise{s.exercise_count !== 1 ? 's' : ''} · {formatDuration(s.duration_seconds)}
-                  </p>
-                </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted text-muted-foreground'}`}>
-                  {s.status}
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
+      {Object.entries(groups).map(([label, items]) => (
+        <section key={label} className="mb-6">
+          <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            {label}
+          </p>
+          <ul className="flex flex-col gap-2">
+            {items.map((s) => {
+              const completed = s.status === 'completed'
+              return (
+                <li key={s.id}>
+                  <Link href={`/workout/session/${s.id}`} className="block">
+                    <div className="surface flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
+                      <span
+                        className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${
+                          completed
+                            ? 'bg-success/10 text-[var(--success)]'
+                            : 'bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        <Dumbbell className="size-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
+                          {s.plan_day_name_snapshot ?? 'Workout'}
+                        </p>
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                          <span>{formatDate(s.started_at)}</span>
+                          <span aria-hidden>·</span>
+                          <span>
+                            {s.exercise_count}{' '}
+                            {s.exercise_count === 1 ? 'exercise' : 'exercises'}
+                          </span>
+                          {formatDuration(s.duration_seconds) && (
+                            <>
+                              <span aria-hidden>·</span>
+                              <span className="inline-flex items-center gap-1">
+                                <Timer className="size-3" />
+                                {formatDuration(s.duration_seconds)}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                      {!completed && (
+                        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          {s.status}
+                        </span>
+                      )}
+                      <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                    </div>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      ))}
+    </PageShell>
   )
 }
