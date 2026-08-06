@@ -5,6 +5,7 @@ import { Check, Play, Shuffle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { AlternatesModal } from './alternates-modal'
+import { VideoModal } from './video-modal'
 
 export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced'
 export type Category = 'push' | 'pull' | 'legs'
@@ -16,6 +17,7 @@ export interface AlternateExercise {
   description: string
   benefits: string[]
   whenToChoose: string
+  youtubeId?: string
 }
 
 export interface Exercise {
@@ -27,6 +29,7 @@ export interface Exercise {
   formTips: string[]
   youtubeId: string
   category: Category
+  rating: number
   alternates: AlternateExercise[]
 }
 
@@ -54,6 +57,12 @@ const DIFFICULTY_CHIP: Record<Difficulty, string> = {
   Advanced: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
 }
 
+function ratingChip(r: number) {
+  if (r >= 8) return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+  if (r >= 6) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+  return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+}
+
 interface ExerciseCardProps {
   exercise: Exercise
   onWatch: (exercise: Exercise) => void
@@ -61,6 +70,7 @@ interface ExerciseCardProps {
 
 export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
   const [showAlternates, setShowAlternates] = useState(false)
+  const [altVideo, setAltVideo] = useState<{ id: string; title: string } | null>(null)
 
   return (
     <>
@@ -73,14 +83,25 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between gap-2 p-4 pb-2">
           <h3 className="text-base font-semibold leading-snug">{exercise.name}</h3>
-          <span
-            className={cn(
-              'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-              DIFFICULTY_CHIP[exercise.difficulty],
-            )}
-          >
-            {exercise.difficulty}
-          </span>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <span
+              className={cn(
+                'rounded-full px-2 py-0.5 text-xs font-bold tabular-nums',
+                ratingChip(exercise.rating),
+              )}
+              title="Effectiveness rating"
+            >
+              {exercise.rating}/10
+            </span>
+            <span
+              className={cn(
+                'rounded-full px-2.5 py-0.5 text-xs font-medium',
+                DIFFICULTY_CHIP[exercise.difficulty],
+              )}
+            >
+              {exercise.difficulty}
+            </span>
+          </div>
         </div>
 
         {/* Muscle chips */}
@@ -142,6 +163,15 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
         <AlternatesModal
           exercise={exercise}
           onClose={() => setShowAlternates(false)}
+          onWatchVideo={(id, title) => setAltVideo({ id, title })}
+        />
+      )}
+
+      {altVideo && (
+        <VideoModal
+          youtubeId={altVideo.id}
+          title={altVideo.title}
+          onClose={() => setAltVideo(null)}
         />
       )}
     </>

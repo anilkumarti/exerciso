@@ -24,6 +24,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'SCVCLChPQFY',
     category: 'push',
+    rating: 9,
     alternates: [
       {
         name: 'Dumbbell Bench Press',
@@ -65,6 +66,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'qEwKCR5JCog',
     category: 'push',
+    rating: 9,
     alternates: [
       {
         name: 'Dumbbell Shoulder Press',
@@ -106,6 +108,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'IODxDxX7oi4',
     category: 'push',
+    rating: 8,
     alternates: [
       {
         name: 'Incline Push-Up',
@@ -147,6 +150,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'yN6Q1UI_xb0',
     category: 'push',
+    rating: 8,
     alternates: [
       {
         name: 'Close-Grip Bench Press',
@@ -190,6 +194,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'eGo4IYlbE5g',
     category: 'pull',
+    rating: 10,
     alternates: [
       {
         name: 'Chin-Up',
@@ -214,6 +219,7 @@ const EXERCISES: Exercise[] = [
         description: 'Cable machine version of the same vertical pulling pattern — set the exact weight and focus on lat activation.',
         benefits: ['Fully adjustable load', 'Great for high-volume work', 'Builds the pattern before pull-ups'],
         whenToChoose: 'you are a beginner building up to pull-ups, or want high-rep volume that bodyweight does not allow.',
+        youtubeId: 'CAwf7n6Tugg',
       },
     ],
   },
@@ -231,6 +237,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'vT2GjY_Umpw',
     category: 'pull',
+    rating: 9,
     alternates: [
       {
         name: 'Dumbbell Row',
@@ -272,6 +279,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'CAwf7n6Tugg',
     category: 'pull',
+    rating: 7,
     alternates: [
       {
         name: 'Pull-Up',
@@ -280,6 +288,7 @@ const EXERCISES: Exercise[] = [
         description: 'The bodyweight equivalent — superior for building raw strength since your entire bodyweight is engaged with every rep.',
         benefits: ['Greater strength development', 'No machine required', 'Translates to better athletic performance'],
         whenToChoose: 'you can complete 5+ pull-ups consistently and want to progress beyond machine-assisted pulling.',
+        youtubeId: 'eGo4IYlbE5g',
       },
       {
         name: 'Straight-Arm Pulldown',
@@ -313,6 +322,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'eIq5CB9JfKE',
     category: 'pull',
+    rating: 9,
     alternates: [
       {
         name: 'Rear Delt Fly',
@@ -356,6 +366,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'bEv6CCg2BC8',
     category: 'legs',
+    rating: 10,
     alternates: [
       {
         name: 'Goblet Squat',
@@ -397,6 +408,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'JCXUYuzwNrM',
     category: 'legs',
+    rating: 9,
     alternates: [
       {
         name: 'Good Morning',
@@ -438,6 +450,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'QOVaHwm-Q6U',
     category: 'legs',
+    rating: 7,
     alternates: [
       {
         name: 'Reverse Lunge',
@@ -479,6 +492,7 @@ const EXERCISES: Exercise[] = [
     ],
     youtubeId: 'IZxyjW7MPJQ',
     category: 'legs',
+    rating: 6,
     alternates: [
       {
         name: 'Goblet Squat',
