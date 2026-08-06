@@ -20,20 +20,26 @@ export interface Exercise {
 
 const CATEGORY_ACCENT: Record<Category, string> = {
   push: 'border-t-blue-500',
-  pull: 'border-t-emerald-500',
-  legs: 'border-t-amber-500',
+  pull: 'border-t-orange-500',
+  legs: 'border-t-emerald-500',
 }
 
 const CATEGORY_CHIP: Record<Category, string> = {
-  push: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-  pull: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-  legs: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  push: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+  pull: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+  legs: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+}
+
+const CATEGORY_BTN: Record<Category, string> = {
+  push: 'border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/50',
+  pull: 'border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/50',
+  legs: 'border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-950/50',
 }
 
 const DIFFICULTY_CHIP: Record<Difficulty, string> = {
-  Beginner: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  Intermediate: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
-  Advanced: 'bg-red-500/10 text-red-700 dark:text-red-400',
+  Beginner: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+  Intermediate: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+  Advanced: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
 }
 
 interface ExerciseCardProps {
@@ -99,7 +105,7 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
         <Button
           variant="outline"
           size="sm"
-          className="w-full gap-2 font-medium"
+          className={cn('w-full gap-2 font-medium', CATEGORY_BTN[exercise.category])}
           onClick={() => onWatch(exercise)}
         >
           <Play className="size-3.5 fill-current" />

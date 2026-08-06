@@ -12,11 +12,10 @@ export default async function LandingPage() {
 
   return (
     <div className="relative flex min-h-svh flex-col">
-      {/* Ambient glow — clipped in its own overflow-hidden shell so it never
-          causes horizontal scroll, and doesn't break sticky children */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-80 overflow-hidden" aria-hidden>
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 overflow-hidden" aria-hidden>
         <div
-          className="absolute -top-32 left-1/2 size-[40rem] -translate-x-1/2 rounded-full opacity-15 blur-3xl"
+          className="absolute -top-24 left-1/2 size-[36rem] -translate-x-1/2 rounded-full opacity-[0.07] blur-3xl"
           style={{ backgroundImage: 'linear-gradient(135deg, var(--grad-from), var(--grad-to))' }}
         />
       </div>
@@ -44,38 +43,18 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero ticker ── */}
-      <section className="border-b border-border bg-muted/40 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-2">
-          {/* Left: badge + tagline */}
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className="hidden shrink-0 rounded-full bg-primary/12 px-2.5 py-0.5 text-[0.6875rem] font-semibold text-primary sm:inline-flex">
-              Free forever · No credit card
-            </span>
-            <span className="hidden h-3.5 w-px shrink-0 bg-border sm:block" aria-hidden />
-            <p className="truncate text-xs text-muted-foreground sm:text-sm">
-              <span className="font-semibold text-foreground">Learn the moves. Track every workout.</span>
-              <span className="hidden sm:inline">
-                {' '}· Browse Push, Pull &amp; Legs tutorials free — no login required.
-              </span>
-            </p>
-          </div>
-          {/* Right: CTAs */}
-          <div className="flex shrink-0 items-center gap-2">
-            <Link
-              href="/login"
-              className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Sign in
-            </Link>
-            <Link href="/signup">
-              <Button size="sm" className="h-7 gap-1 px-3 text-xs">
-                Get started
-                <ArrowRight className="size-3" />
-              </Button>
-            </Link>
-          </div>
-        </div>
+      {/* ── Intro ── */}
+      <section className="mx-auto w-full max-w-4xl px-4 pb-2 pt-7">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          Learn the moves.{' '}
+          <span className="text-brand-gradient">Track every workout.</span>
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Browse Push, Pull &amp; Legs tutorials — no account needed.{' '}
+          <Link href="/login" className="font-semibold text-foreground underline-offset-2 hover:underline">
+            Already training? Sign in →
+          </Link>
+        </p>
       </section>
 
       {/* ── Exercise library (Push / Pull / Legs) ── */}
