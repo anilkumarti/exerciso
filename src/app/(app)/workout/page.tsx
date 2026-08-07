@@ -4,6 +4,7 @@ import { getWorkoutPlans } from '@/lib/queries/workout-plans'
 import { setActivePlan, deletePlan } from '@/lib/actions/workout-plans'
 import { Button } from '@/components/ui/button'
 import { EmptyState, PageShell, PageHeader } from '@/components/shared/page-shell'
+import { ConfirmAction } from '@/components/shared/confirm-action'
 
 const SPLIT_LABELS: Record<string, string> = {
   full_body: 'Full Body',
@@ -138,7 +139,10 @@ function PlanCard({
             </Button>
           </form>
         )}
-        <form action={deletePlan.bind(null, plan.id)}>
+        <ConfirmAction
+          action={deletePlan.bind(null, plan.id)}
+          message={`Delete "${plan.name}"? All training days and exercises will be permanently removed.`}
+        >
           <Button
             variant="ghost"
             size="icon-sm"
@@ -148,7 +152,7 @@ function PlanCard({
           >
             <Trash2 className="size-4" />
           </Button>
-        </form>
+        </ConfirmAction>
       </div>
     </div>
   )

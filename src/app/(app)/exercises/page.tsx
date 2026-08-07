@@ -37,7 +37,7 @@ export default async function ExercisesPage({ searchParams }: PageProps) {
       </div>
 
       {/* Exercise list */}
-      <div className="mx-auto w-full max-w-lg px-4 py-4">
+      <div className="mx-auto w-full max-w-lg px-4 pt-4 pb-10">
         {exercises.length === 0 ? (
           <EmptyState
             icon={SearchX}

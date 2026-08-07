@@ -10,6 +10,10 @@ function formatDuration(seconds: number | null) {
   return `${m}m`
 }
 
+function formatStatus(s: string) {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
     weekday: 'short',
@@ -105,7 +109,7 @@ export default async function HistoryPage() {
                       </div>
                       {!completed && (
                         <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                          {s.status}
+                          {formatStatus(s.status)}
                         </span>
                       )}
                       <ChevronRight className="size-4 shrink-0 text-muted-foreground" />

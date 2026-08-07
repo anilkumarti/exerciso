@@ -10,7 +10,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageShell } from '@/components/shared/page-shell'
+import { ConfirmAction } from '@/components/shared/confirm-action'
 import { SessionTimer } from '@/components/workout/session-timer'
+
+function formatStatus(s: string) {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
 
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60)
@@ -58,7 +63,7 @@ export default async function SessionPage({
               ) : (
                 <>
                   <CircleCheck className="size-3.5" />
-                  {session.status}
+                  {formatStatus(session.status)}
                 </>
               )}
             </p>
@@ -106,7 +111,10 @@ export default async function SessionPage({
                 Finish workout
               </Button>
             </form>
-            <form action={abandonSession.bind(null, id)}>
+            <ConfirmAction
+              action={abandonSession.bind(null, id)}
+              message="Abandon this workout? All logged sets will be saved but the session won't count as completed."
+            >
               <Button
                 type="submit"
                 variant="ghost"
@@ -114,7 +122,7 @@ export default async function SessionPage({
               >
                 Abandon
               </Button>
-            </form>
+            </ConfirmAction>
           </div>
         )}
       </div>

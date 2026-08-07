@@ -10,9 +10,11 @@ import {
   removeExerciseFromDay,
 } from '@/lib/actions/workout-plans'
 import { startSession } from '@/lib/actions/workout-sessions'
+import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageShell, PageHeader } from '@/components/shared/page-shell'
+import { ConfirmAction } from '@/components/shared/confirm-action'
 
 const SPLIT_LABELS: Record<string, string> = {
   full_body: 'Full Body',
@@ -28,8 +30,14 @@ export default async function PlanDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const plan = await getWorkoutPlan(id)
+  const [plan, supabase] = await Promise.all([getWorkoutPlan(id), getSupabaseServerClient()])
   if (!plan) notFound()
+
+  const { count: activeCount } = await supabase
+    .from('workout_sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'in_progress')
+  const hasActiveSession = (activeCount ?? 0) > 0
 
   const createDayWithPlan = createDay.bind(null, id)
 
@@ -62,7 +70,10 @@ export default async function PlanDetailPage({
             </Button>
           </form>
         )}
-        <form action={deletePlan.bind(null, id)}>
+        <ConfirmAction
+          action={deletePlan.bind(null, id)}
+          message="Delete this plan? All training days and exercises will be permanently removed."
+        >
           <Button
             size="sm"
             variant="ghost"
@@ -72,7 +83,7 @@ export default async function PlanDetailPage({
             <Trash2 className="size-3.5" />
             Delete plan
           </Button>
-        </form>
+        </ConfirmAction>
       </div>
 
       {/* Days */}
@@ -88,13 +99,28 @@ export default async function PlanDetailPage({
             <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
               <h2 className="min-w-0 truncate font-semibold">{day.name}</h2>
               <div className="flex shrink-0 items-center gap-1.5">
-                <form action={startSession.bind(null, id, day.id, day.name)}>
-                  <Button size="sm" type="submit" className="gap-1">
-                    <Play className="size-3 fill-current" />
-                    Start
-                  </Button>
-                </form>
-                <form action={deleteDay.bind(null, day.id, id)}>
+                {hasActiveSession ? (
+                  <ConfirmAction
+                    action={startSession.bind(null, id, day.id, day.name)}
+                    message="You have a workout in progress. Starting a new one will abandon the current session. Continue?"
+                  >
+                    <Button size="sm" type="submit" className="gap-1">
+                      <Play className="size-3 fill-current" />
+                      Start
+                    </Button>
+                  </ConfirmAction>
+                ) : (
+                  <form action={startSession.bind(null, id, day.id, day.name)}>
+                    <Button size="sm" type="submit" className="gap-1">
+                      <Play className="size-3 fill-current" />
+                      Start
+                    </Button>
+                  </form>
+                )}
+                <ConfirmAction
+                  action={deleteDay.bind(null, day.id, id)}
+                  message={`Delete "${day.name}"? All exercises in this day will be removed.`}
+                >
                   <Button
                     size="icon-sm"
                     variant="ghost"
@@ -104,7 +130,7 @@ export default async function PlanDetailPage({
                   >
                     <Trash2 className="size-4" />
                   </Button>
-                </form>
+                </ConfirmAction>
               </div>
             </div>
 
@@ -127,7 +153,10 @@ export default async function PlanDetailPage({
                         {ex.target_sets} × {ex.target_reps} · {ex.rest_seconds}s rest
                       </p>
                     </div>
-                    <form action={removeExerciseFromDay.bind(null, ex.id, id)}>
+                    <ConfirmAction
+                      action={removeExerciseFromDay.bind(null, ex.id, id)}
+                      message={`Remove "${ex.exercise?.name ?? 'this exercise'}" from the day?`}
+                    >
                       <Button
                         size="icon-xs"
                         variant="ghost"
@@ -137,7 +166,7 @@ export default async function PlanDetailPage({
                       >
                         <X className="size-3.5" />
                       </Button>
-                    </form>
+                    </ConfirmAction>
                   </li>
                 ))}
               </ul>

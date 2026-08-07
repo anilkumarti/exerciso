@@ -562,9 +562,9 @@ const EXERCISES: Exercise[] = [
 type Tab = { id: Category; label: string; emoji: string; color: string }
 
 const TABS: Tab[] = [
-  { id: 'push', label: 'Push', emoji: '💪', color: 'data-[active=true]:border-blue-500 data-[active=true]:text-blue-600 dark:data-[active=true]:text-blue-400' },
-  { id: 'pull', label: 'Pull', emoji: '🏋️', color: 'data-[active=true]:border-orange-500 data-[active=true]:text-orange-600 dark:data-[active=true]:text-orange-400' },
-  { id: 'legs', label: 'Legs', emoji: '🦵', color: 'data-[active=true]:border-emerald-500 data-[active=true]:text-emerald-600 dark:data-[active=true]:text-emerald-400' },
+  { id: 'push', label: 'Push', emoji: '💪', color: 'data-[active=true]:border-violet-500 data-[active=true]:text-violet-600 dark:data-[active=true]:text-violet-400' },
+  { id: 'pull', label: 'Pull', emoji: '🏋️', color: 'data-[active=true]:border-violet-500 data-[active=true]:text-violet-600 dark:data-[active=true]:text-violet-400' },
+  { id: 'legs', label: 'Legs', emoji: '🦵', color: 'data-[active=true]:border-violet-500 data-[active=true]:text-violet-600 dark:data-[active=true]:text-violet-400' },
 ]
 
 const SECTION_DESCRIPTIONS: Record<Category, string> = {

@@ -18,6 +18,8 @@ import {
   SectionHeader,
   StatTile,
 } from '@/components/shared/page-shell'
+import { GreetingText } from '@/components/shared/greeting-text'
+import { ConfirmAction } from '@/components/shared/confirm-action'
 
 const SPLIT_LABELS: Record<string, string> = {
   full_body: 'Full Body',
@@ -25,13 +27,6 @@ const SPLIT_LABELS: Record<string, string> = {
   push_pull_legs: 'Push/Pull/Legs',
   bro_split: 'Bro Split',
   custom: 'Custom',
-}
-
-function greeting() {
-  const h = new Date().getHours()
-  if (h < 12) return 'Good morning'
-  if (h < 17) return 'Good afternoon'
-  return 'Good evening'
 }
 
 function formatDuration(s: number | null) {
@@ -61,7 +56,7 @@ export default async function DashboardPage() {
       <header className="flex items-start justify-between gap-3 pt-8 pb-6">
         <div className="min-w-0">
           <p className="text-sm font-medium text-muted-foreground">
-            {greeting()}
+            <GreetingText />
           </p>
           <h1 className="mt-0.5 truncate text-[1.75rem] leading-tight font-bold">
             {firstName ?? 'Welcome back'}
@@ -170,19 +165,24 @@ export default async function DashboardPage() {
                         </p>
                       </div>
                     </div>
-                    <form
-                      action={startSession.bind(
-                        null,
-                        activePlan.id,
-                        day.id,
-                        day.name
-                      )}
-                    >
-                      <Button size="sm" type="submit" className="gap-1">
-                        <Play className="size-3 fill-current" />
-                        Start
-                      </Button>
-                    </form>
+                    {activeSession ? (
+                      <ConfirmAction
+                        action={startSession.bind(null, activePlan.id, day.id, day.name)}
+                        message="You have a workout in progress. Starting a new one will abandon the current session. Continue?"
+                      >
+                        <Button size="sm" type="submit" className="gap-1">
+                          <Play className="size-3 fill-current" />
+                          Start
+                        </Button>
+                      </ConfirmAction>
+                    ) : (
+                      <form action={startSession.bind(null, activePlan.id, day.id, day.name)}>
+                        <Button size="sm" type="submit" className="gap-1">
+                          <Play className="size-3 fill-current" />
+                          Start
+                        </Button>
+                      </form>
+                    )}
                   </li>
                 ))}
               </ul>
