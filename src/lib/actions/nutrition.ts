@@ -95,6 +95,16 @@ export async function setDayMode(mode: 'rest' | 'training') {
   revalidatePath('/nutrition')
 }
 
+export async function setDietPref(pref: 'veg' | 'eggetarian' | 'non_veg') {
+  const cookieStore = await cookies()
+  cookieStore.set('nutrition_diet_pref', pref, {
+    maxAge: 60 * 60 * 24 * 365,
+    path: '/',
+    sameSite: 'lax',
+  })
+  revalidatePath('/nutrition')
+}
+
 export interface MealEntryPayload {
   food_name: string
   calories: number

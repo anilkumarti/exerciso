@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from 'react'
 import { Plus, Search, X, Zap } from 'lucide-react'
 import { logFood } from '@/lib/actions/nutrition'
-import { searchFoods, type FoodItem } from '@/data/food-database'
+import { searchFoods, type FoodItem, type DietPref } from '@/data/food-database'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -23,16 +23,17 @@ interface Props {
   date: string
   recentFoods: RecentFood[]
   defaultMeal?: string
+  dietPref?: DietPref
 }
 
-export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack' }: Props) {
+export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPref = 'non_veg' }: Props) {
   const [open, setOpen] = useState(false)
   const [mealType, setMealType] = useState(defaultMeal)
   const [isPending, startTransition] = useTransition()
   const [searchQuery, setSearchQuery] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
 
-  const searchResults = searchQuery.length >= 2 ? searchFoods(searchQuery) : []
+  const searchResults = searchQuery.length >= 2 ? searchFoods(searchQuery, dietPref) : []
 
   function prefill(food: RecentFood) {
     if (!formRef.current) return
@@ -110,7 +111,7 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack' }: Props
               <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="search"
-                placeholder="Search 60+ foods…"
+                placeholder="Search Indian foods…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="h-9 w-full rounded-xl border border-border bg-muted pl-8 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary focus:bg-background"

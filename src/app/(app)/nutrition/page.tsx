@@ -4,10 +4,11 @@ import { Moon, Trash2, UtensilsCrossed } from 'lucide-react'
 import { getTodayLog, getRecentFoods, getTargetsForGoal, getWeeklyHistory } from '@/lib/queries/nutrition'
 import { getProfile } from '@/lib/queries/profile'
 import { deleteFood } from '@/lib/actions/nutrition'
-import { suggestMeals } from '@/data/food-database'
+import { suggestMeals, type DietPref } from '@/data/food-database'
 import { MacroBar } from '@/components/nutrition/macro-bar'
 import { AddFoodSheet } from '@/components/nutrition/add-food-sheet'
 import { DayModeToggle } from '@/components/nutrition/day-mode-toggle'
+import { DietPrefToggle } from '@/components/nutrition/diet-pref-toggle'
 import { MealSuggestions } from '@/components/nutrition/meal-suggestions'
 import { SavedMealsSection } from '@/components/nutrition/saved-meals-section'
 import { SaveMealButton } from '@/components/nutrition/save-meal-button'
@@ -38,6 +39,7 @@ export default async function NutritionPage() {
   const today = todayString()
   const cookieStore = await cookies()
   const dayMode = (cookieStore.get('nutrition_day_mode')?.value as 'rest' | 'training') ?? 'training'
+  const dietPref = (cookieStore.get('nutrition_diet_pref')?.value as DietPref) ?? 'non_veg'
 
   const [log, recentFoods, profile, weeklyDays] = await Promise.all([
     getTodayLog(today),
@@ -78,7 +80,7 @@ export default async function NutritionPage() {
   const over = eaten > targets.calories
 
   const mealSuggestions = !over && remaining >= 300
-    ? suggestMeals(remaining, remainingProtein)
+    ? suggestMeals(remaining, remainingProtein, dietPref)
     : []
 
   const grouped = MEAL_ORDER.reduce<Record<string, typeof entries>>((acc, meal) => {
@@ -94,8 +96,9 @@ export default async function NutritionPage() {
         <div>
           <p className="text-sm font-medium text-muted-foreground">{formatDate(today)}</p>
           <h1 className="mt-0.5 text-[1.75rem] leading-tight font-bold">Nutrition</h1>
-          <div className="mt-2.5 flex items-center gap-2">
+          <div className="mt-2.5 flex flex-wrap items-center gap-2">
             <DayModeToggle mode={dayMode} />
+            <DietPrefToggle pref={dietPref} />
             {streak >= 2 && (
               <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                 🔥 {streak}-day streak
@@ -216,7 +219,7 @@ export default async function NutritionPage() {
         )}
       </div>
 
-      <AddFoodSheet date={today} recentFoods={recentFoods} />
+      <AddFoodSheet date={today} recentFoods={recentFoods} dietPref={dietPref} />
     </div>
   )
 }
