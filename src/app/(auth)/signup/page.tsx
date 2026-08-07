@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { signup } from '@/lib/actions/auth'
 import { AuthField } from '@/components/auth/auth-field'
 import { SubmitButton } from '@/components/auth/submit-button'
+import { GoogleButton } from '@/components/auth/google-button'
 
 export default function SignupPage() {
   const [state, action] = useActionState(signup, {})
@@ -14,6 +15,14 @@ export default function SignupPage() {
       <div className="space-y-1 text-center">
         <h1 className="text-xl font-semibold">Create account</h1>
         <p className="text-sm text-muted-foreground">Start tracking your fitness journey</p>
+      </div>
+
+      <GoogleButton />
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-muted-foreground">or</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <form action={action} className="space-y-4">

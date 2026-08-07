@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation'
 import { login } from '@/lib/actions/auth'
 import { AuthField } from '@/components/auth/auth-field'
 import { SubmitButton } from '@/components/auth/submit-button'
+import { GoogleButton } from '@/components/auth/google-button'
 
 function ParamBanners() {
   const params = useSearchParams()
@@ -44,6 +45,14 @@ export default function LoginPage() {
       <Suspense>
         <ParamBanners />
       </Suspense>
+
+      <GoogleButton />
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-muted-foreground">or</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
 
       <form action={action} className="space-y-4">
         {state.error && (
