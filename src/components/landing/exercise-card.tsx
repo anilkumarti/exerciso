@@ -105,7 +105,7 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
         </div>
 
         {/* Description */}
-        <p className="line-clamp-3 px-4 pb-3 text-sm text-muted-foreground">
+        <p className="px-4 pb-3 text-sm text-muted-foreground">
           {exercise.description}
         </p>
 
