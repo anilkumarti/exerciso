@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 
 async function getUser() {
@@ -80,6 +81,50 @@ export async function deleteFood(entryId: string) {
     .delete()
     .eq('id', entryId)
     .eq('user_id', user.id)
+
+  revalidateNutrition()
+}
+
+export async function setDayMode(mode: 'rest' | 'training') {
+  const cookieStore = await cookies()
+  cookieStore.set('nutrition_day_mode', mode, {
+    maxAge: 60 * 60 * 24,
+    path: '/',
+    sameSite: 'lax',
+  })
+  revalidatePath('/nutrition')
+}
+
+export interface MealEntryPayload {
+  food_name: string
+  calories: number
+  protein_g: number
+  carbs_g: number
+  fat_g: number
+  quantity_grams: number
+  meal_type: string
+}
+
+export async function logMeal(mealEntries: MealEntryPayload[], date: string) {
+  const { supabase, user } = await getUser()
+  if (!mealEntries.length) return
+
+  const logId = await getOrCreateLog(supabase, user.id, date)
+
+  await supabase.from('food_entries').insert(
+    mealEntries.map(e => ({
+      nutrition_log_id: logId,
+      user_id: user.id,
+      food_name_snapshot: e.food_name,
+      meal_type: e.meal_type,
+      quantity_grams: e.quantity_grams,
+      calories: Math.round(e.calories),
+      protein_g: e.protein_g,
+      carbs_g: e.carbs_g,
+      fat_g: e.fat_g,
+      fiber_g: 0,
+    }))
+  )
 
   revalidateNutrition()
 }

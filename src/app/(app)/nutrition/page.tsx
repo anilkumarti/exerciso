@@ -1,10 +1,14 @@
 import Link from 'next/link'
-import { Trash2, UtensilsCrossed } from 'lucide-react'
-import { getTodayLog, getRecentFoods, getTargetsForGoal } from '@/lib/queries/nutrition'
+import { cookies } from 'next/headers'
+import { Moon, Trash2, UtensilsCrossed } from 'lucide-react'
+import { getTodayLog, getRecentFoods, getTargetsForGoal, getWeeklyHistory } from '@/lib/queries/nutrition'
 import { getProfile } from '@/lib/queries/profile'
 import { deleteFood } from '@/lib/actions/nutrition'
 import { MacroBar } from '@/components/nutrition/macro-bar'
 import { AddFoodSheet } from '@/components/nutrition/add-food-sheet'
+import { DayModeToggle } from '@/components/nutrition/day-mode-toggle'
+import { SavedMealsSection } from '@/components/nutrition/saved-meals-section'
+import { SaveMealButton } from '@/components/nutrition/save-meal-button'
 import { SectionHeader } from '@/components/shared/page-shell'
 
 const MEAL_LABELS: Record<string, string> = {
@@ -30,13 +34,31 @@ function formatDate(iso: string) {
 
 export default async function NutritionPage() {
   const today = todayString()
-  const [log, recentFoods, profile] = await Promise.all([
+  const cookieStore = await cookies()
+  const dayMode = (cookieStore.get('nutrition_day_mode')?.value as 'rest' | 'training') ?? 'training'
+
+  const [log, recentFoods, profile, weeklyDays] = await Promise.all([
     getTodayLog(today),
     getRecentFoods(10),
     getProfile(),
+    getWeeklyHistory(),
   ])
 
-  const targets = getTargetsForGoal(profile?.fitness_goal ?? 'maintain')
+  const baseTargets = getTargetsForGoal(profile?.fitness_goal ?? 'maintain')
+  const targets = dayMode === 'rest'
+    ? { ...baseTargets, calories: Math.round(baseTargets.calories * 0.85) }
+    : baseTargets
+
+  // Protein streak: consecutive days from today (most-recent first) where logged and protein ≥ target
+  let streak = 0
+  for (const day of [...weeklyDays].reverse()) {
+    if (day.entries_count > 0 && day.protein_g >= targets.protein_g) {
+      streak++
+    } else if (day.entries_count > 0) {
+      break
+    }
+  }
+
   const entries = log?.entries ?? []
 
   const totals = entries.reduce(
@@ -62,10 +84,18 @@ export default async function NutritionPage() {
   return (
     <div className="mx-auto w-full max-w-lg pb-28">
       {/* Header */}
-      <div className="px-4 pt-8 pb-6 flex items-start justify-between gap-3">
+      <div className="px-4 pt-8 pb-5 flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{formatDate(today)}</p>
           <h1 className="mt-0.5 text-[1.75rem] leading-tight font-bold">Nutrition</h1>
+          <div className="mt-2.5 flex items-center gap-2">
+            <DayModeToggle mode={dayMode} />
+            {streak >= 2 && (
+              <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                🔥 {streak}-day streak
+              </span>
+            )}
+          </div>
         </div>
         <Link
           href="/nutrition/history"
@@ -77,6 +107,11 @@ export default async function NutritionPage() {
 
       {/* Calorie hero */}
       <div className="mx-4 mb-4 rounded-2xl bg-brand-gradient p-5 text-white shadow-hero">
+        {dayMode === 'rest' && (
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold">
+            <Moon className="size-3" /> Rest day target
+          </div>
+        )}
         <div className="flex items-baseline justify-between">
           <div>
             <p className="text-xs font-semibold tracking-wide uppercase opacity-80">
@@ -102,6 +137,9 @@ export default async function NutritionPage() {
         <MacroBar label="Fat"   current={totals.fat_g}   target={targets.fat_g}   color="red" />
       </div>
 
+      {/* Saved meals (renders client-side from localStorage) */}
+      <SavedMealsSection date={today} />
+
       {/* Food log */}
       <div className="px-4 flex flex-col gap-5">
         {Object.keys(grouped).length === 0 ? (
@@ -115,45 +153,50 @@ export default async function NutritionPage() {
             </p>
           </div>
         ) : (
-          Object.entries(grouped).map(([meal, items]) => {
-            const mealCal  = Math.round(items.reduce((s, e) => s + e.calories,  0))
-            const mealProt = Math.round(items.reduce((s, e) => s + e.protein_g, 0))
-            return (
-              <section key={meal}>
-                <SectionHeader title={MEAL_LABELS[meal] ?? meal} />
-                <div className="surface overflow-hidden divide-y divide-border">
-                  {items.map((entry) => (
-                    <div key={entry.id} className="flex items-center gap-3 px-4 py-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{entry.food_name_snapshot}</p>
-                        <p className="mt-0.5 tabular text-xs text-muted-foreground">
-                          {Math.round(entry.calories)} cal
-                          {entry.protein_g > 0 && <> · {Math.round(entry.protein_g)}g protein</>}
-                          {entry.carbs_g > 0 && <> · {Math.round(entry.carbs_g)}g carbs</>}
-                          {entry.fat_g > 0 && <> · {Math.round(entry.fat_g)}g fat</>}
-                        </p>
+          <>
+            {Object.entries(grouped).map(([meal, items]) => {
+              const mealCal  = Math.round(items.reduce((s, e) => s + e.calories,  0))
+              const mealProt = Math.round(items.reduce((s, e) => s + e.protein_g, 0))
+              return (
+                <section key={meal}>
+                  <SectionHeader title={MEAL_LABELS[meal] ?? meal} />
+                  <div className="surface overflow-hidden divide-y divide-border">
+                    {items.map((entry) => (
+                      <div key={entry.id} className="flex items-center gap-3 px-4 py-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">{entry.food_name_snapshot}</p>
+                          <p className="mt-0.5 tabular text-xs text-muted-foreground">
+                            {Math.round(entry.calories)} cal
+                            {entry.protein_g > 0 && <> · {Math.round(entry.protein_g)}g protein</>}
+                            {entry.carbs_g > 0 && <> · {Math.round(entry.carbs_g)}g carbs</>}
+                            {entry.fat_g > 0 && <> · {Math.round(entry.fat_g)}g fat</>}
+                          </p>
+                        </div>
+                        <form action={deleteFood.bind(null, entry.id)}>
+                          <button
+                            type="submit"
+                            className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            aria-label={`Delete ${entry.food_name_snapshot}`}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </form>
                       </div>
-                      <form action={deleteFood.bind(null, entry.id)}>
-                        <button
-                          type="submit"
-                          className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                          aria-label={`Delete ${entry.food_name_snapshot}`}
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
-                      </form>
+                    ))}
+                    <div className="flex items-center justify-between bg-muted/40 px-4 py-2">
+                      <span className="text-xs text-muted-foreground">Subtotal</span>
+                      <span className="tabular text-xs font-semibold">
+                        {mealCal} cal · {mealProt}g protein
+                      </span>
                     </div>
-                  ))}
-                  <div className="flex items-center justify-between bg-muted/40 px-4 py-2">
-                    <span className="text-xs text-muted-foreground">Subtotal</span>
-                    <span className="tabular text-xs font-semibold">
-                      {mealCal} cal · {mealProt}g protein
-                    </span>
                   </div>
-                </div>
-              </section>
-            )
-          })
+                </section>
+              )
+            })}
+            <div className="flex justify-center pt-1 pb-2">
+              <SaveMealButton entries={entries} />
+            </div>
+          </>
         )}
       </div>
 
