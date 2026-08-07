@@ -91,11 +91,14 @@ export async function signup(
   })
 
   if (error) {
-    const message = error.message.toLowerCase().includes('invalid')
+    const msg = error.message.toLowerCase()
+    const message = msg.includes('invalid')
       ? 'Please enter a valid email address'
-      : error.message.includes('already registered')
+      : msg.includes('already registered') || msg.includes('user already registered')
         ? 'An account with this email already exists'
-        : error.message
+        : msg.includes('rate limit')
+          ? 'Too many attempts. Please wait a few minutes and try again.'
+          : error.message
     return { error: message, values: savedValues, _key: Date.now() }
   }
 
