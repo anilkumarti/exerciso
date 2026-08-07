@@ -8,7 +8,7 @@ import { VideoModal } from './video-modal'
 // ---------------------------------------------------------------------------
 // Exercise data
 // ---------------------------------------------------------------------------
-const EXERCISES: Exercise[] = [
+export const EXERCISES: Exercise[] = [
   // ── PUSH ──────────────────────────────────────────────────────────────────
   {
     id: 'bench-press',
@@ -21,6 +21,38 @@ const EXERCISES: Exercise[] = [
       'Retract shoulder blades and plant them firmly into the bench',
       'Lower bar to lower chest with elbows at ~45° — not flared',
       'Drive your feet into the floor and press to full lockout',
+    ],
+    dos: [
+      'Retract and depress shoulder blades before unracking the bar',
+      'Keep a natural arch in your lower back for stability',
+      'Plant feet firmly and use leg drive throughout the press',
+      'Touch the bar to your lower chest on every rep',
+    ],
+    donts: [
+      'Bounce the bar off your chest to use momentum',
+      'Flare elbows straight out to 90° from your torso',
+      'Let your hips rise off the bench',
+      'Use a thumbless grip — always wrap your thumbs around the bar',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Bar path drifting toward the face',
+        correction: 'Keep the bar in a slight arc — lower to the lower chest and press back toward the rack, not straight up',
+      },
+      {
+        mistake: 'Elbows flared out to 90°',
+        correction: 'Tuck elbows to 45–60° from the torso to protect the shoulder joint under load',
+      },
+      {
+        mistake: 'Feet raised or tip-toeing on the floor',
+        correction: 'Plant feet flat and drive them into the ground to create full-body tension through the press',
+      },
+    ],
+    progressionTips: [
+      'Add 2.5 kg every session until you stall — then switch to weekly increments',
+      'Use close-grip bench to address lagging triceps that limit your press',
+      'Pause reps (2 s at the chest) eliminate bounce and reveal true bottom-position strength',
+      'When stuck, add a back-off set at 80% for higher reps to build total volume',
     ],
     youtubeId: 'vcBig73ojpE',
     category: 'push',
@@ -67,6 +99,38 @@ const EXERCISES: Exercise[] = [
       'Squeeze glutes and brace core before pressing',
       'Push your head through the window as the bar passes your face',
     ],
+    dos: [
+      'Grip just outside shoulder width with elbows slightly forward',
+      'Brace core and squeeze glutes hard before every press',
+      'Push your head through the "window" as the bar clears your face',
+      'Lock out fully overhead with ears between your upper arms',
+    ],
+    donts: [
+      'Press with excessive forward lean that turns it into an incline press',
+      'Let the lower back hyperextend — keep the pelvis neutral',
+      'Allow the bar to drift forward away from the midline',
+      'Use a grip wider than shoulder width',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Wrist pain from cocked-back wrists',
+        correction: 'Keep wrists stacked directly over elbows — a slight forward lean of the wrist is fine but avoid bending them back',
+      },
+      {
+        mistake: 'Excessive lower-back arching under load',
+        correction: 'Brace your core hard throughout; tuck the pelvis slightly to reduce lumbar stress and prevent the bar drifting forward',
+      },
+      {
+        mistake: 'Bar drifting forward throughout the lift',
+        correction: 'Start at the collarbone and press in a vertical line — clearing the face requires only a brief head-back cue, not a permanent lean',
+      },
+    ],
+    progressionTips: [
+      'Use 2.5 kg jumps each session; switch to 1.25 kg microplates when progress stalls',
+      'Add seated dumbbell shoulder presses on off days to build total pressing volume',
+      'Include face pulls after every OHP session to balance anterior and posterior deltoid strength',
+      'When stuck, use a push press (leg drive) to overload the top and build confidence overhead',
+    ],
     youtubeId: '_RlRDWO2jfg',
     category: 'push',
     rating: 9,
@@ -112,6 +176,38 @@ const EXERCISES: Exercise[] = [
       'Lower until chest lightly grazes the floor',
       'Keep elbows at ~45° — not tucked fully in or flared out',
     ],
+    dos: [
+      'Form a straight line from head to heels before starting',
+      'Keep elbows at ~45° from your torso throughout every rep',
+      'Lower until your chest lightly grazes the floor',
+      'Press through the full palm — do not rest all load on the wrists',
+    ],
+    donts: [
+      'Let hips sag toward the floor or pike upward',
+      'Flare elbows straight out to 90° from the body',
+      'Stop short of touching the floor — full ROM matters',
+      'Hold your breath — exhale on the push, inhale on the way down',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Hips sagging toward the floor mid-rep',
+        correction: 'Squeeze glutes and brace core throughout — the hips should stay in line with shoulders and heels the entire time',
+      },
+      {
+        mistake: 'Head dropping forward',
+        correction: 'Maintain a neutral neck by looking slightly ahead of your hands, not straight down at the floor',
+      },
+      {
+        mistake: 'Short range of motion to bang out more reps',
+        correction: 'Lower all the way until the chest touches, then press to full arm extension — half reps deliver half the stimulus',
+      },
+    ],
+    progressionTips: [
+      'Build volume first: reach 3 × 15 with perfect form before making the exercise harder',
+      'Progression ladder: incline → standard → decline → weighted vest → archer push-ups',
+      'Add one rep per set each session to progressively overload without any equipment',
+      'Ring push-ups add instability and significantly increase difficulty without loading the wrists',
+    ],
     youtubeId: 'IODxDxX7oi4',
     category: 'push',
     rating: 8,
@@ -156,6 +252,38 @@ const EXERCISES: Exercise[] = [
       'Lower until upper arms are parallel to the floor',
       'Lean forward slightly for chest focus; stay upright for triceps',
       'Avoid shrugging — keep shoulders depressed throughout',
+    ],
+    dos: [
+      'Start in a locked-out position with shoulders actively depressed',
+      'Lower until upper arms reach parallel to the floor',
+      'Lean forward slightly to shift emphasis toward the chest',
+      'Keep elbows pointing backward — not flared outward',
+    ],
+    donts: [
+      'Rush the descent or use body swing for momentum',
+      'Let shoulders shrug up toward your ears during the set',
+      'Descend so deep the shoulder rotates painfully at the bottom',
+      'Use excessive forward lean when your goal is tricep focus',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Shoulders rising toward the ears throughout the rep',
+        correction: 'Actively depress and retract the scapulae before descending and maintain that position through every rep',
+      },
+      {
+        mistake: 'Excessive forward lean when targeting triceps',
+        correction: 'Stay upright to bias the triceps — save the forward lean specifically for chest-focused dip sessions',
+      },
+      {
+        mistake: 'Partial range of motion to use more weight',
+        correction: 'Descend until upper arms reach parallel; cutting reps short sacrifices both chest and tricep stimulus',
+      },
+    ],
+    progressionTips: [
+      'Begin with band-assisted dips and gradually use thinner bands as strength builds',
+      'Progression: band-assisted → bodyweight × 10 reps → add 2.5 kg on a belt',
+      'Ring dips add significant instability — use them when bodyweight dips feel easy',
+      'Combine with close-grip bench press for a powerful tricep-focused training session',
     ],
     youtubeId: '2z8JmcrW-As',
     category: 'push',
@@ -204,6 +332,38 @@ const EXERCISES: Exercise[] = [
       'Initiate by pulling shoulder blades down and together',
       'Pull until chin clears the bar — no half reps',
     ],
+    dos: [
+      'Start from a full dead hang with arms completely extended',
+      'Initiate by depressing shoulder blades before bending the arms',
+      'Pull until your chin clearly clears the bar — chest to bar is ideal',
+      'Control the descent over 2–3 seconds for full eccentric benefit',
+    ],
+    donts: [
+      'Kip or swing unless specifically training kipping for sport',
+      'Let the shoulders shrug up at the top of the rep',
+      'Use half-reps that avoid the full hang at the bottom',
+      'Use a thumbless grip that reduces back engagement',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Not reaching a full dead hang at the bottom',
+        correction: 'Arms must fully extend at the bottom of every rep — cutting short hides weakness and limits the range of motion that builds pulling strength',
+      },
+      {
+        mistake: 'Initiating with the biceps instead of the back',
+        correction: 'Begin each rep by pulling shoulder blades down and together before bending the elbows — this engages the lats first',
+      },
+      {
+        mistake: 'Chin not clearing the bar',
+        correction: 'A rep counts only when the chin clears the bar; if you cannot complete it, use an assisted variation until strength builds',
+      },
+    ],
+    progressionTips: [
+      'Progression ladder: band-assisted → negatives-only → full pull-ups → weighted',
+      'Grease the groove: perform submaximal sets (40–60% of max) multiple times per day to rapidly build volume',
+      'Once you can do 10+ bodyweight pull-ups, add 2.5 kg and work back up to 8–10 reps',
+      'Include chin-ups and neutral-grip variations to develop the lats from multiple angles',
+    ],
     youtubeId: 'eGo4IYlbE5g',
     category: 'pull',
     rating: 10,
@@ -248,6 +408,38 @@ const EXERCISES: Exercise[] = [
       'Torso roughly 45° to the floor, back flat — no rounding',
       'Drive elbows back rather than pulling with your hands',
       'Pause at the top and squeeze the shoulder blades together',
+    ],
+    dos: [
+      'Keep your back flat at roughly 45° to the floor throughout',
+      'Row the bar to your lower chest or upper abdomen',
+      'Drive elbows back — think of your hands as hooks, not pullers',
+      'Pause at the top and squeeze shoulder blades together for one second',
+    ],
+    donts: [
+      'Round your lower back under load — reduce weight before form breaks',
+      'Use excessive body swing and momentum to move the bar',
+      'Row to the neck or collarbone — this shifts load to rear delts, not the back',
+      'Let the bar drift away from your body during the pull',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Rounding the lower back under load',
+        correction: 'Hinge at the hip with a neutral spine; reduce the weight before your back rounds — no amount of extra load justifies lumbar flexion',
+      },
+      {
+        mistake: 'Using body momentum to swing the bar',
+        correction: 'The torso should remain stationary — if it moves, the weight is too heavy; reduce load and focus on strict back muscle activation',
+      },
+      {
+        mistake: 'Pulling with the hands instead of the elbows',
+        correction: 'Think of your hands as hooks and focus entirely on driving your elbows backward to engage the rhomboids and lats',
+      },
+    ],
+    progressionTips: [
+      'Add weight incrementally and prioritize the pause-squeeze at the top over heavier loads',
+      'Alternate between overhand grip (upper back emphasis) and underhand grip (lower lat and bicep emphasis)',
+      'Superset with face pulls to balance anterior and posterior shoulder development every session',
+      'When lower back fatigue limits sessions, substitute with dumbbell rows to remove spinal loading',
     ],
     youtubeId: 'axoeDmW0oAY',
     category: 'pull',
@@ -294,6 +486,38 @@ const EXERCISES: Exercise[] = [
       'Lead with the elbows — imagine them pointing to the floor',
       'Control the weight on the way back up — no yanking',
     ],
+    dos: [
+      'Lean back slightly with chest proud before each pull',
+      'Lead with your elbows — imagine them pointing toward the floor',
+      'Pull the bar to your upper chest, not behind the neck',
+      'Control the return over 2 seconds — resist the weight on the way up',
+    ],
+    donts: [
+      'Pull the bar behind your neck — this puts dangerous stress on the cervical spine',
+      'Use excessive backward lean or body swing to move the weight',
+      'Let elbows flare too far wide beyond the hands',
+      'Shorten the range of motion to use a heavier weight',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Pulling the bar behind the neck',
+        correction: 'Always pull to the upper chest — behind-neck pulldowns compress the cervical spine and offer zero advantage over front pulldowns',
+      },
+      {
+        mistake: 'Biceps fatiguing before the back',
+        correction: 'Use a false grip (thumbs same side as fingers) and focus on the "elbows to pockets" cue to remove bicep dominance from the pull',
+      },
+      {
+        mistake: 'No control on the upward return',
+        correction: 'Resist the weight on the way up — the eccentric phase stretches the lats under load and is where significant growth stimulus occurs',
+      },
+    ],
+    progressionTips: [
+      'Increase weight in small steps (2.5–5 kg) to maintain full range of motion throughout',
+      'When you can complete 12+ reps, begin transitioning to assisted or full pull-ups with the same pattern',
+      'Add a 2-second pause with elbows fully drawn down to maximise the lat contraction at the bottom',
+      'Include single-arm pulldowns to correct any dominant-side compensation between left and right',
+    ],
     youtubeId: 'O94yEoGXtBY',
     category: 'pull',
     rating: 7,
@@ -338,6 +562,38 @@ const EXERCISES: Exercise[] = [
       'Set the cable at head height and use a rope attachment',
       'Keep elbows above wrists and pull to forehead level',
       'Externally rotate at the top — thumbs pointing behind you',
+    ],
+    dos: [
+      'Set the cable at upper-chest or face height with a rope attachment',
+      'Keep elbows above your wrists and hands throughout the pull',
+      'Pull to forehead level and rotate thumbs to point behind you at the top',
+      'Use a light weight with high reps — this is shoulder health work',
+    ],
+    donts: [
+      'Pull with elbows below wrist level — this turns it into a row, not a face pull',
+      'Use weight so heavy it pulls your torso forward during the pull',
+      'Rush through the external rotation at the peak of each rep',
+      'Skip this exercise because it feels easy — that ease is the point',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Low elbow path that turns it into a row',
+        correction: 'Keep elbows high and wide — the rope should be pulled toward your forehead, not your chest, with elbows well above the wrists',
+      },
+      {
+        mistake: 'Skipping the external rotation at peak contraction',
+        correction: 'At the end of each pull, rotate your wrists so thumbs point straight back — this is what trains the rotator cuff and rear delts',
+      },
+      {
+        mistake: 'Loading too heavy and sacrificing form',
+        correction: 'This exercise is about shoulder health — 15–25 reps with light weight does more good than 5 heavy reps with poor external rotation',
+      },
+    ],
+    progressionTips: [
+      'Target 3 × 20+ reps before adding any load — prioritize quality of movement over weight',
+      'Face pulls can be performed daily as a warm-up or cool-down — the load is light enough for very high frequency',
+      'Pair with band pull-aparts for a complete shoulder-health superset that takes under five minutes',
+      'Gradually increase resistance as the external rotation feels automatic and effortless',
     ],
     youtubeId: 'ljgqer1ZpXg',
     category: 'pull',
@@ -386,6 +642,38 @@ const EXERCISES: Exercise[] = [
       'Brace core hard, chest up, and sit between your heels',
       'Drive knees out over toes on the way up — no caving',
     ],
+    dos: [
+      'Set the bar on your upper traps or rear delts and find your natural foot stance',
+      'Keep chest up and brace core hard before and during every descent',
+      'Drive knees out over toes throughout the descent and ascent',
+      'Break parallel to fully activate glutes and hamstrings',
+    ],
+    donts: [
+      'Let knees cave inward (valgus collapse) at any point in the rep',
+      'Allow heels to rise off the floor — address ankle mobility first',
+      'Use excessive forward lean that resembles a good morning',
+      'Relax at the bottom — stay braced through the entire rep',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Knee valgus (knees caving inward) under load',
+        correction: 'Actively push knees out over the little toe throughout; reduce weight and drill the pattern until it becomes automatic',
+      },
+      {
+        mistake: 'Butt wink (lumbar flexion at the bottom)',
+        correction: 'Work on hip and ankle mobility; only squat to the depth where your spine stays neutral — go deeper gradually as mobility improves',
+      },
+      {
+        mistake: 'Excessive forward torso lean',
+        correction: 'Strengthen the upper back; use the cue "chest up — show your logo to the wall" to maintain a more upright position throughout',
+      },
+    ],
+    progressionTips: [
+      'Linear progression: add 2.5 kg every session until stalls appear consistently',
+      'Add box squats to train depth consistency and improve posterior chain activation',
+      'When stuck: deload 10–15%, rebuild with perfect form, then add volume before intensity',
+      'Include goblet squats as a warm-up drill — they reinforce upright torso mechanics before loading the bar',
+    ],
     youtubeId: 'UFs6E3Ti1jg',
     category: 'legs',
     rating: 10,
@@ -430,6 +718,38 @@ const EXERCISES: Exercise[] = [
       'Push hips back — not knees down — to initiate the hinge',
       'Keep bar close to legs; feel the hamstring stretch at bottom',
       'Drive hips forward to stand; squeeze glutes at lockout',
+    ],
+    dos: [
+      'Push hips backward to initiate the hinge — not knees down',
+      'Keep the bar in contact with your legs the entire way down',
+      'Lower until you feel a deep hamstring stretch with a flat back',
+      'Drive hips forward and squeeze glutes forcefully at lockout',
+    ],
+    donts: [
+      'Round the lower back at the bottom of the movement',
+      'Squat the weight down rather than hinging at the hips',
+      'Let the bar drift forward and away from your legs',
+      'Skip the hip extension at the top — the glute squeeze is critical',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Squatting the movement instead of hinging',
+        correction: 'Push your hips backward to initiate — knees should only soften slightly; keep shins close to vertical throughout the descent',
+      },
+      {
+        mistake: 'Lower back rounding at the bottom',
+        correction: 'Stop the descent when you feel the spine starting to flex; keep chest proud and work on hamstring flexibility over time',
+      },
+      {
+        mistake: 'Short range of motion to manage heavier weight',
+        correction: 'Use elevated RDLs (standing on a platform) to safely increase the stretch, or reduce load to allow full range with a flat back',
+      },
+    ],
+    progressionTips: [
+      'Add 5 kg per week until you plateau, then switch to 2.5 kg increments',
+      'Use the single-leg RDL as an accessory to expose and correct side-to-side strength imbalances',
+      'Pair with lying leg curls in a superset to train hamstrings at both hip and knee flexion for complete development',
+      'Slow eccentrics (3–4 s on the way down) increase time under tension without needing to add load',
     ],
     youtubeId: '_oyxCn2iSjU',
     category: 'legs',
@@ -476,6 +796,38 @@ const EXERCISES: Exercise[] = [
       'Lower back knee toward the floor without touching it',
       'Keep torso upright — resist leaning forward',
     ],
+    dos: [
+      'Step far enough forward so the front shin stays vertical',
+      'Lower the back knee toward the floor in a controlled descent',
+      'Keep your torso upright — do not lean forward',
+      'Maintain core engagement to support balance through each step',
+    ],
+    donts: [
+      'Step too short, causing the front knee to travel well past the toes',
+      'Let the back knee crash to the ground',
+      'Rush through each rep — control both the descent and the drive up',
+      'Lock out the knee at the top between steps',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Front knee caving inward on the step',
+        correction: 'Drive the front knee out over the little toe — this is a stability issue; reduce weight if it persists',
+      },
+      {
+        mistake: 'Forward torso lean under load',
+        correction: 'Keep the chest up and load at your sides; if you cannot stay upright with weight, reduce load and build the pattern first',
+      },
+      {
+        mistake: 'Steps too short',
+        correction: 'Take a larger step — the front shin should stay vertical when the back knee lowers; short steps create excessive forward knee travel',
+      },
+    ],
+    progressionTips: [
+      'Start with bodyweight, then progress to holding dumbbells, then to a barbell across the back',
+      'Increase step distance and control before adding weight — form dictates load, not the other way around',
+      'Add lateral lunges and reverse lunges for comprehensive hip stability and single-leg strength',
+      'Use walking lunges as a metabolic finisher: 3 × 20 steps at the end of a leg session for extra volume',
+    ],
     youtubeId: 'cFaqN-BY-ZY',
     category: 'legs',
     rating: 7,
@@ -520,6 +872,38 @@ const EXERCISES: Exercise[] = [
       'Place feet shoulder-width at mid-height on the platform',
       'Lower until knees are at 90° — never let lower back round',
       'Press through the whole foot; avoid locking knees at the top',
+    ],
+    dos: [
+      'Place feet shoulder-width at the middle of the platform',
+      'Lower until knees reach 90° or just below for a full rep',
+      'Keep lower back pressed firmly into the seat pad throughout',
+      'Breathe out on the push phase, breathe in on the lowering phase',
+    ],
+    donts: [
+      'Allow your lower back to peel off the seat pad at the bottom',
+      'Lock your knees out at the top of each press',
+      'Place feet too low on the platform — this greatly increases knee shear force',
+      'Use partial range of motion just to move heavier weight',
+    ],
+    commonMistakes: [
+      {
+        mistake: 'Lower back peeling off the seat pad at the bottom',
+        correction: 'Reduce weight and only lower as far as you can while keeping your back flat; pelvic tilt at the bottom is a significant injury risk',
+      },
+      {
+        mistake: 'Locking knees out at the top',
+        correction: 'Stop just short of full extension to keep tension on the quads and protect the knee joint from hyperextension stress',
+      },
+      {
+        mistake: 'Feet placed too low on the platform',
+        correction: 'Keep feet at mid to upper platform height — very low placement creates excessive shear force at the knee joint',
+      },
+    ],
+    progressionTips: [
+      'Increase load every 1–2 sessions — the leg press typically supports heavier loads than most other leg exercises',
+      'Vary foot position: high and wide for glutes, mid shoulder-width for balance, narrow for inner quad emphasis',
+      'Include the single-leg leg press to reveal bilateral imbalances hidden in two-legged pressing',
+      'Do not neglect free squats and lunges — the leg press lacks the core and stabiliser demand of compound movements',
     ],
     youtubeId: 'B6rGDcfyPto',
     category: 'legs',
@@ -629,5 +1013,3 @@ export function ExerciseLibrary() {
     </>
   )
 }
-
-export { EXERCISES }

@@ -31,6 +31,10 @@ export interface Exercise {
   category: Category
   rating: number
   alternates: AlternateExercise[]
+  dos?: string[]
+  donts?: string[]
+  commonMistakes?: { mistake: string; correction: string }[]
+  progressionTips?: string[]
 }
 
 const CATEGORY_ACCENT = 'border-t-violet-500'
