@@ -22,6 +22,11 @@ function ParamBanners() {
           Password updated. Sign in with your new password.
         </p>
       )}
+      {params.get('error') === 'confirmation_failed' && (
+        <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          Confirmation link expired or invalid. Please sign up again.
+        </p>
+      )}
     </>
   )
 }
