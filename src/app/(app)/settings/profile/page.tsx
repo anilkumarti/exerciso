@@ -1,9 +1,14 @@
+import { cookies } from 'next/headers'
 import { getProfile } from '@/lib/queries/profile'
 import { PageShell, PageHeader } from '@/components/shared/page-shell'
 import { SignOutButton } from '@/components/shared/sign-out-button'
+import { DietPrefSetting } from '@/components/nutrition/diet-pref-setting'
 import { ProfileForm } from './profile-form'
+import type { DietPref } from '@/data/food-database'
 
 export default async function ProfilePage() {
+  const cookieStore = await cookies()
+  const dietPref = (cookieStore.get('nutrition_diet_pref')?.value as DietPref) ?? 'non_veg'
   const profile = await getProfile()
 
   return (
@@ -13,10 +18,6 @@ export default async function ProfilePage() {
         subtitle="Your profile, units and training goals."
         backHref="/dashboard"
       />
-      {/*
-        Keyed on the persisted values so the uncontrolled inputs remount with
-        fresh defaults after a save, instead of mutating defaultValue in place.
-      */}
       <ProfileForm
         key={[
           profile?.display_name,
@@ -30,6 +31,21 @@ export default async function ProfilePage() {
         ].join('|')}
         profile={profile}
       />
+
+      <section className="mt-6">
+        <h2 className="mb-2 px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Nutrition
+        </h2>
+        <div className="surface flex flex-col gap-3 p-4">
+          <div>
+            <p className="text-sm font-medium">Dietary preference</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Filters food search and meal suggestions
+            </p>
+          </div>
+          <DietPrefSetting current={dietPref} />
+        </div>
+      </section>
 
       <div className="mt-6 border-t border-border pt-4">
         <SignOutButton />

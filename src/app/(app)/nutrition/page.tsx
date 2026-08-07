@@ -8,7 +8,6 @@ import { suggestMeals, type DietPref } from '@/data/food-database'
 import { MacroBar } from '@/components/nutrition/macro-bar'
 import { AddFoodSheet } from '@/components/nutrition/add-food-sheet'
 import { DayModeToggle } from '@/components/nutrition/day-mode-toggle'
-import { DietPrefToggle } from '@/components/nutrition/diet-pref-toggle'
 import { MealSuggestions } from '@/components/nutrition/meal-suggestions'
 import { SavedMealsSection } from '@/components/nutrition/saved-meals-section'
 import { SaveMealButton } from '@/components/nutrition/save-meal-button'
@@ -115,7 +114,6 @@ export default async function NutritionPage() {
           <h1 className="mt-0.5 text-[1.75rem] leading-tight font-bold">Nutrition</h1>
           <div className="mt-2.5 flex flex-wrap items-center gap-2">
             <DayModeToggle mode={dayMode} />
-            <DietPrefToggle pref={dietPref} />
             {streak >= 2 && (
               <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                 🔥 {streak}-day streak
