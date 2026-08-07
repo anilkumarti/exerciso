@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
-import { getWeeklyHistory, getTargetsForGoal } from '@/lib/queries/nutrition'
+import { getWeeklyHistory, getLatestWeight } from '@/lib/queries/nutrition'
 import { getProfile } from '@/lib/queries/profile'
+import { calculateTargets } from '@/lib/tdee'
 import { PageShell, PageHeader } from '@/components/shared/page-shell'
 import { MacroBar } from '@/components/nutrition/macro-bar'
 
@@ -16,8 +17,11 @@ function formatDay(iso: string) {
 }
 
 export default async function NutritionHistoryPage() {
-  const [days, profile] = await Promise.all([getWeeklyHistory(), getProfile()])
-  const targets = getTargetsForGoal(profile?.fitness_goal ?? 'maintain')
+  const [days, profile, latestWeightKg] = await Promise.all([getWeeklyHistory(), getProfile(), getLatestWeight()])
+  const { targets } = calculateTargets(
+    profile ?? { id: '', display_name: null, date_of_birth: null, weight_unit: 'kg', height_unit: 'cm', height_cm: null, goal_weight_kg: null, activity_level: 'moderately_active', fitness_goal: 'maintain', onboarding_done: false },
+    latestWeightKg,
+  )
 
   const daysWithData = days.filter(d => d.entries_count > 0)
   const avgCalories = daysWithData.length

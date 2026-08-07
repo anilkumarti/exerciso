@@ -1,23 +1,10 @@
 import { getSupabaseServerClient } from '@/lib/supabase/server'
-import type { FitnessGoal } from '@/types/database'
 
 export interface MacroTargets {
   calories: number
   protein_g: number
   carbs_g: number
   fat_g: number
-}
-
-const TARGETS_BY_GOAL: Record<FitnessGoal, MacroTargets> = {
-  lose_weight:       { calories: 1800, protein_g: 160, carbs_g: 150, fat_g: 60 },
-  build_muscle:      { calories: 2500, protein_g: 180, carbs_g: 250, fat_g: 80 },
-  maintain:          { calories: 2200, protein_g: 150, carbs_g: 230, fat_g: 73 },
-  improve_endurance: { calories: 2400, protein_g: 140, carbs_g: 280, fat_g: 65 },
-  increase_strength: { calories: 2600, protein_g: 190, carbs_g: 260, fat_g: 85 },
-}
-
-export function getTargetsForGoal(goal: FitnessGoal): MacroTargets {
-  return TARGETS_BY_GOAL[goal] ?? TARGETS_BY_GOAL.maintain
 }
 
 export interface FoodEntry {
@@ -149,4 +136,20 @@ export async function getWeeklyHistory(): Promise<WeeklyDay[]> {
     protein_g: Math.round(agg.get(d.date)?.prot ?? 0),
     entries_count: agg.get(d.date)?.count ?? 0,
   }))
+}
+
+export async function getLatestWeight(): Promise<number | null> {
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data } = await supabase
+    .from('weight_entries')
+    .select('weight_kg')
+    .eq('user_id', user.id)
+    .order('logged_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  return data?.weight_kg ?? null
 }

@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
-import { Moon, Trash2, UtensilsCrossed } from 'lucide-react'
-import { getTodayLog, getRecentFoods, getTargetsForGoal, getWeeklyHistory } from '@/lib/queries/nutrition'
+import { Moon, Trash2, UtensilsCrossed, Info } from 'lucide-react'
+import { getTodayLog, getRecentFoods, getWeeklyHistory, getLatestWeight } from '@/lib/queries/nutrition'
+import { calculateTargets } from '@/lib/tdee'
 import { getProfile } from '@/lib/queries/profile'
 import { deleteFood } from '@/lib/actions/nutrition'
 import { suggestMeals, type DietPref } from '@/data/food-database'
@@ -48,14 +49,18 @@ export default async function NutritionPage() {
   const dayMode = (cookieStore.get('nutrition_day_mode')?.value as 'rest' | 'training') ?? 'training'
   const dietPref = (cookieStore.get('nutrition_diet_pref')?.value as DietPref) ?? 'non_veg'
 
-  const [log, recentFoods, profile, weeklyDays] = await Promise.all([
+  const [log, recentFoods, profile, weeklyDays, latestWeightKg] = await Promise.all([
     getTodayLog(today),
     getRecentFoods(10),
     getProfile(),
     getWeeklyHistory(),
+    getLatestWeight(),
   ])
 
-  const baseTargets = getTargetsForGoal(profile?.fitness_goal ?? 'maintain')
+  const { targets: baseTargets, isPersonalized } = calculateTargets(
+    profile ?? { id: '', display_name: null, date_of_birth: null, weight_unit: 'kg', height_unit: 'cm', height_cm: null, goal_weight_kg: null, activity_level: 'moderately_active', fitness_goal: 'maintain', onboarding_done: false },
+    latestWeightKg,
+  )
   const targets = dayMode === 'rest'
     ? { ...baseTargets, calories: Math.round(baseTargets.calories * 0.85) }
     : baseTargets
@@ -152,6 +157,20 @@ export default async function NutritionPage() {
           </div>
         </div>
       </div>
+
+      {/* Incomplete-profile nudge */}
+      {!isPersonalized && (
+        <Link
+          href="/settings/profile"
+          className="mx-4 mb-4 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm dark:border-amber-800/50 dark:bg-amber-900/20"
+        >
+          <Info className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+          <span className="flex-1 text-amber-800 dark:text-amber-300">
+            Targets are estimates. Add your weight, height &amp; age for a personalised calorie goal.
+          </span>
+          <span className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400">Update →</span>
+        </Link>
+      )}
 
       {/* Macro bars */}
       <div className="mx-4 mb-6 surface p-4 flex flex-col gap-4">
