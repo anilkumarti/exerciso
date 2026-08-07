@@ -33,23 +33,11 @@ export interface Exercise {
   alternates: AlternateExercise[]
 }
 
-const CATEGORY_ACCENT: Record<Category, string> = {
-  push: 'border-t-blue-500',
-  pull: 'border-t-orange-500',
-  legs: 'border-t-emerald-500',
-}
+const CATEGORY_ACCENT = 'border-t-violet-500'
 
-const CATEGORY_CHIP: Record<Category, string> = {
-  push: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  pull: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
-  legs: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-}
+const CATEGORY_CHIP = 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
 
-const CATEGORY_BTN: Record<Category, string> = {
-  push: 'border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/50',
-  pull: 'border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-300 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/50',
-  legs: 'border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-950/50',
-}
+const CATEGORY_BTN = 'border-violet-200 text-violet-700 hover:bg-violet-50 hover:border-violet-300 dark:border-violet-800 dark:text-violet-300 dark:hover:bg-violet-950/50'
 
 const DIFFICULTY_CHIP: Record<Difficulty, string> = {
   Beginner: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
@@ -77,7 +65,7 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
       <div
         className={cn(
           'surface flex flex-col border-t-2 transition-shadow duration-200 hover:shadow-raised',
-          CATEGORY_ACCENT[exercise.category],
+          CATEGORY_ACCENT,
         )}
       >
         {/* Header */}
@@ -109,7 +97,7 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
           {exercise.muscles.map(m => (
             <span
               key={m}
-              className={cn('rounded-full px-2 py-0.5 text-xs font-medium', CATEGORY_CHIP[exercise.category])}
+              className={cn('rounded-full px-2 py-0.5 text-xs font-medium', CATEGORY_CHIP)}
             >
               {m}
             </span>
@@ -141,7 +129,7 @@ export function ExerciseCard({ exercise, onWatch }: ExerciseCardProps) {
           <Button
             variant="outline"
             size="sm"
-            className={cn('w-full gap-2 font-medium', CATEGORY_BTN[exercise.category])}
+            className={cn('w-full gap-2 font-medium', CATEGORY_BTN)}
             onClick={() => onWatch(exercise)}
           >
             <Play className="size-3.5 fill-current" />
