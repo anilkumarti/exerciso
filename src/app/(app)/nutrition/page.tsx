@@ -4,9 +4,11 @@ import { Moon, Trash2, UtensilsCrossed } from 'lucide-react'
 import { getTodayLog, getRecentFoods, getTargetsForGoal, getWeeklyHistory } from '@/lib/queries/nutrition'
 import { getProfile } from '@/lib/queries/profile'
 import { deleteFood } from '@/lib/actions/nutrition'
+import { suggestMeals } from '@/data/food-database'
 import { MacroBar } from '@/components/nutrition/macro-bar'
 import { AddFoodSheet } from '@/components/nutrition/add-food-sheet'
 import { DayModeToggle } from '@/components/nutrition/day-mode-toggle'
+import { MealSuggestions } from '@/components/nutrition/meal-suggestions'
 import { SavedMealsSection } from '@/components/nutrition/saved-meals-section'
 import { SaveMealButton } from '@/components/nutrition/save-meal-button'
 import { SectionHeader } from '@/components/shared/page-shell'
@@ -60,7 +62,6 @@ export default async function NutritionPage() {
   }
 
   const entries = log?.entries ?? []
-
   const totals = entries.reduce(
     (acc, e) => ({
       calories: acc.calories + e.calories,
@@ -73,7 +74,12 @@ export default async function NutritionPage() {
 
   const eaten = Math.round(totals.calories)
   const remaining = Math.max(0, targets.calories - eaten)
+  const remainingProtein = Math.max(0, targets.protein_g - totals.protein_g)
   const over = eaten > targets.calories
+
+  const mealSuggestions = !over && remaining >= 300
+    ? suggestMeals(remaining, remainingProtein)
+    : []
 
   const grouped = MEAL_ORDER.reduce<Record<string, typeof entries>>((acc, meal) => {
     const items = entries.filter(e => e.meal_type === meal)
@@ -136,6 +142,16 @@ export default async function NutritionPage() {
         <MacroBar label="Carbs" current={totals.carbs_g} target={targets.carbs_g} color="amber" />
         <MacroBar label="Fat"   current={totals.fat_g}   target={targets.fat_g}   color="red" />
       </div>
+
+      {/* Meal suggestions (shown when calories remaining ≥ 300) */}
+      {mealSuggestions.length > 0 && (
+        <MealSuggestions
+          suggestions={mealSuggestions}
+          remainingCal={remaining}
+          remainingProtein={remainingProtein}
+          date={today}
+        />
+      )}
 
       {/* Saved meals (renders client-side from localStorage) */}
       <SavedMealsSection date={today} />
