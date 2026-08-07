@@ -25,7 +25,7 @@ export default function SignupPage() {
         <div className="h-px flex-1 bg-border" />
       </div>
 
-      <form action={action} className="space-y-4">
+      <form key={state._key} action={action} className="space-y-4">
         {state.error && (
           <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {state.error}
@@ -39,6 +39,7 @@ export default function SignupPage() {
           placeholder="Your name"
           autoComplete="name"
           required
+          defaultValue={state.values?.displayName}
           errors={state.fieldErrors?.displayName}
         />
 
@@ -51,6 +52,7 @@ export default function SignupPage() {
           autoComplete="email"
           inputMode="email"
           required
+          defaultValue={state.values?.email}
           errors={state.fieldErrors?.email}
         />
 

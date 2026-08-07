@@ -33,6 +33,10 @@ export type AuthActionState = {
   error?: string
   success?: string
   fieldErrors?: Record<string, string[]>
+  /** Submitted values echoed back so forms can pre-fill on error */
+  values?: Record<string, string>
+  /** Changes each submission so defaultValue re-applies after remount */
+  _key?: number
 }
 
 export async function login(
@@ -69,9 +73,11 @@ export async function signup(
     displayName: formData.get('displayName') as string,
   }
 
+  const savedValues = { displayName: raw.displayName, email: raw.email }
+
   const parsed = signupSchema.safeParse(raw)
   if (!parsed.success) {
-    return { fieldErrors: parsed.error.flatten().fieldErrors }
+    return { fieldErrors: parsed.error.flatten().fieldErrors, values: savedValues, _key: Date.now() }
   }
 
   const supabase = await getSupabaseServerClient()
@@ -85,10 +91,12 @@ export async function signup(
   })
 
   if (error) {
-    if (error.message.includes('already registered')) {
-      return { error: 'An account with this email already exists' }
-    }
-    return { error: error.message }
+    const message = error.message.toLowerCase().includes('invalid')
+      ? 'Please enter a valid email address'
+      : error.message.includes('already registered')
+        ? 'An account with this email already exists'
+        : error.message
+    return { error: message, values: savedValues, _key: Date.now() }
   }
 
   // Session is present when email confirmation is disabled — go straight to dashboard.

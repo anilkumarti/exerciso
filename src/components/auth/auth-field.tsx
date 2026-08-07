@@ -14,6 +14,7 @@ interface AuthFieldProps {
   errors?: string[]
   required?: boolean
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
+  defaultValue?: string
 }
 
 export function AuthField({
@@ -26,6 +27,7 @@ export function AuthField({
   errors,
   required,
   inputMode,
+  defaultValue,
 }: AuthFieldProps) {
   return (
     <div className="space-y-1.5">
@@ -38,6 +40,7 @@ export function AuthField({
         autoComplete={autoComplete}
         required={required}
         inputMode={inputMode}
+        defaultValue={defaultValue}
         aria-invalid={errors && errors.length > 0 ? true : undefined}
         aria-describedby={errors?.length ? `${id}-error` : undefined}
         className={cn('h-12 text-base', errors?.length && 'border-destructive')}
