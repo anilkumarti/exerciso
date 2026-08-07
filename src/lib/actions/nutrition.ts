@@ -115,6 +115,50 @@ export interface MealEntryPayload {
   meal_type: string
 }
 
+export async function copyYesterdayLog(today: string) {
+  const { supabase, user } = await getUser()
+
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+  const { data: prevLog } = await supabase
+    .from('nutrition_logs')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('logged_date', yesterdayStr)
+    .maybeSingle()
+
+  if (!prevLog) return
+
+  const { data: entries } = await supabase
+    .from('food_entries')
+    .select('food_name_snapshot, meal_type, quantity_grams, calories, protein_g, carbs_g, fat_g, fiber_g')
+    .eq('nutrition_log_id', prevLog.id)
+    .eq('user_id', user.id)
+
+  if (!entries?.length) return
+
+  const todayLogId = await getOrCreateLog(supabase, user.id, today)
+
+  await supabase.from('food_entries').insert(
+    entries.map(e => ({
+      nutrition_log_id: todayLogId,
+      user_id: user.id,
+      food_name_snapshot: e.food_name_snapshot,
+      meal_type: e.meal_type,
+      quantity_grams: e.quantity_grams,
+      calories: e.calories,
+      protein_g: e.protein_g,
+      carbs_g: e.carbs_g,
+      fat_g: e.fat_g,
+      fiber_g: e.fiber_g ?? 0,
+    }))
+  )
+
+  revalidateNutrition()
+}
+
 export async function logMeal(mealEntries: MealEntryPayload[], date: string) {
   const { supabase, user } = await getUser()
   if (!mealEntries.length) return

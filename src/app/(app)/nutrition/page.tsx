@@ -12,6 +12,7 @@ import { DietPrefToggle } from '@/components/nutrition/diet-pref-toggle'
 import { MealSuggestions } from '@/components/nutrition/meal-suggestions'
 import { SavedMealsSection } from '@/components/nutrition/saved-meals-section'
 import { SaveMealButton } from '@/components/nutrition/save-meal-button'
+import { CopyYesterdayButton } from '@/components/nutrition/copy-yesterday-button'
 import { SectionHeader } from '@/components/shared/page-shell'
 
 const MEAL_LABELS: Record<string, string> = {
@@ -89,6 +90,15 @@ export default async function NutritionPage() {
   const mealSuggestions = !over && remaining >= 300
     ? suggestMeals(remaining, remainingProtein, dietPref)
     : []
+
+  // Yesterday's data for copy-yesterday feature
+  const yesterdayStr = (() => {
+    const d = new Date(today)
+    d.setDate(d.getDate() - 1)
+    return d.toISOString().split('T')[0]
+  })()
+  const yesterdayDay = weeklyDays.find(d => d.date === yesterdayStr)
+  const hasYesterdayData = (yesterdayDay?.entries_count ?? 0) > 0
 
   const grouped = MEAL_ORDER.reduce<Record<string, typeof entries>>((acc, meal) => {
     const items = entries.filter(e => e.meal_type === meal)
@@ -169,14 +179,23 @@ export default async function NutritionPage() {
       {/* Food log */}
       <div className="px-4 flex flex-col gap-5">
         {Object.keys(grouped).length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border px-6 py-14 text-center">
+          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border px-6 py-10 text-center">
             <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <UtensilsCrossed className="size-7" />
             </div>
-            <p className="font-semibold">Nothing logged yet</p>
-            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
-              Tap the + button to log your first meal.
-            </p>
+            <div>
+              <p className="font-semibold">Nothing logged yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Tap + to add food, or copy yesterday's meals below.
+              </p>
+            </div>
+            {hasYesterdayData && (
+              <CopyYesterdayButton
+                date={today}
+                yesterdayCalories={yesterdayDay!.calories}
+                yesterdayProtein={yesterdayDay!.protein_g}
+              />
+            )}
           </div>
         ) : (
           <>
@@ -219,8 +238,16 @@ export default async function NutritionPage() {
                 </section>
               )
             })}
-            <div className="flex justify-center pt-1 pb-2">
+            <div className="flex items-center justify-between pt-1 pb-2">
               <SaveMealButton entries={entries} />
+              {hasYesterdayData && (
+                <CopyYesterdayButton
+                  date={today}
+                  yesterdayCalories={yesterdayDay!.calories}
+                  yesterdayProtein={yesterdayDay!.protein_g}
+                  compact
+                />
+              )}
             </div>
           </>
         )}
