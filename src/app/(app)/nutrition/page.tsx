@@ -15,15 +15,22 @@ import { SaveMealButton } from '@/components/nutrition/save-meal-button'
 import { SectionHeader } from '@/components/shared/page-shell'
 
 const MEAL_LABELS: Record<string, string> = {
-  breakfast:    'Breakfast',
-  lunch:        'Lunch',
-  dinner:       'Dinner',
-  snack:        'Snack',
-  pre_workout:  'Pre-workout',
-  post_workout: 'Post-workout',
+  breakfast:      '🌅 Breakfast',
+  morning_snack:  '🍎 Morning Snack',
+  lunch:          '☀️ Lunch',
+  evening_snack:  '🫖 Evening Snack',
+  snack:          '🍽️ Snack',
+  dinner:         '🌙 Dinner',
+  supper:         '🌃 Supper',
+  pre_workout:    '💪 Pre-workout',
+  post_workout:   '🥗 Post-workout',
 }
 
-const MEAL_ORDER = ['breakfast', 'pre_workout', 'lunch', 'dinner', 'post_workout', 'snack']
+const MEAL_ORDER = [
+  'breakfast', 'morning_snack', 'pre_workout',
+  'lunch', 'evening_snack', 'snack',
+  'dinner', 'post_workout', 'supper',
+]
 
 function todayString() {
   return new Date().toISOString().split('T')[0]

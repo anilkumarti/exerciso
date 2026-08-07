@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { Plus, Search, X, Zap } from 'lucide-react'
 import { logFood } from '@/lib/actions/nutrition'
 import { searchFoods, type FoodItem, type DietPref } from '@/data/food-database'
@@ -11,27 +11,42 @@ import { cn } from '@/lib/utils'
 import type { RecentFood } from '@/lib/queries/nutrition'
 
 const MEAL_TYPES = [
-  { value: 'breakfast',    label: 'Breakfast' },
-  { value: 'lunch',        label: 'Lunch' },
-  { value: 'dinner',       label: 'Dinner' },
-  { value: 'snack',        label: 'Snack' },
-  { value: 'pre_workout',  label: 'Pre-workout' },
-  { value: 'post_workout', label: 'Post-workout' },
+  { value: 'breakfast',      label: 'Breakfast',      emoji: '🌅', time: '6 – 10 AM'  },
+  { value: 'morning_snack',  label: 'Morning Snack',  emoji: '🍎', time: '10 AM – 12' },
+  { value: 'lunch',          label: 'Lunch',          emoji: '☀️', time: '12 – 3 PM'  },
+  { value: 'evening_snack',  label: 'Evening Snack',  emoji: '🫖', time: '3 – 6 PM'   },
+  { value: 'dinner',         label: 'Dinner',         emoji: '🌙', time: '7 – 10 PM'  },
+  { value: 'supper',         label: 'Supper',         emoji: '🌃', time: '9 PM+'       },
+  { value: 'pre_workout',    label: 'Pre-workout',    emoji: '💪', time: 'Before gym'  },
+  { value: 'post_workout',   label: 'Post-workout',   emoji: '🥗', time: 'After gym'   },
 ]
+
+function getMealByTime(): string {
+  const h = new Date().getHours()
+  if (h >= 6  && h < 10) return 'breakfast'
+  if (h >= 10 && h < 12) return 'morning_snack'
+  if (h >= 12 && h < 15) return 'lunch'
+  if (h >= 15 && h < 19) return 'evening_snack'
+  if (h >= 19 && h < 22) return 'dinner'
+  return 'supper'
+}
 
 interface Props {
   date: string
   recentFoods: RecentFood[]
-  defaultMeal?: string
   dietPref?: DietPref
 }
 
-export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPref = 'non_veg' }: Props) {
+export function AddFoodSheet({ date, recentFoods, dietPref = 'non_veg' }: Props) {
   const [open, setOpen] = useState(false)
-  const [mealType, setMealType] = useState(defaultMeal)
+  const [mealType, setMealType] = useState('breakfast')
   const [isPending, startTransition] = useTransition()
   const [searchQuery, setSearchQuery] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
+
+  useEffect(() => {
+    setMealType(getMealByTime())
+  }, [])
 
   const searchResults = searchQuery.length >= 2 ? searchFoods(searchQuery, dietPref) : []
 
@@ -64,7 +79,7 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPre
     startTransition(async () => {
       await logFood(formData)
       formRef.current?.reset()
-      setMealType(defaultMeal)
+      setMealType(getMealByTime())
       setOpen(false)
     })
   }
@@ -96,7 +111,7 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPre
         )}
         style={{ maxHeight: '92dvh' }}
       >
-        {/* Handle */}
+        {/* Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
           <h2 className="text-base font-semibold">Add food</h2>
           <button onClick={() => setOpen(false)} className="rounded-full p-1 text-muted-foreground hover:text-foreground">
@@ -119,7 +134,6 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPre
             </div>
 
             {searchQuery.length >= 2 ? (
-              /* Food database results */
               searchResults.length > 0 ? (
                 <div className="flex flex-col divide-y divide-border overflow-hidden rounded-xl border border-border">
                   {searchResults.map(food => (
@@ -144,7 +158,6 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPre
                 <p className="py-3 text-center text-sm text-muted-foreground">No foods found for &ldquo;{searchQuery}&rdquo;</p>
               )
             ) : (
-              /* Quick-add chips when not searching */
               recentFoods.length > 0 && (
                 <>
                   <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -177,7 +190,7 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPre
               <Input
                 id="food_name"
                 name="food_name"
-                placeholder="e.g. Chicken breast"
+                placeholder="e.g. Dal chawal"
                 required
                 className="h-11 text-base"
                 autoComplete="off"
@@ -188,20 +201,26 @@ export function AddFoodSheet({ date, recentFoods, defaultMeal = 'snack', dietPre
             <div className="flex flex-col gap-1.5">
               <Label>Meal</Label>
               <input type="hidden" name="meal_type" value={mealType} />
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {MEAL_TYPES.map((m) => (
                   <button
                     key={m.value}
                     type="button"
                     onClick={() => setMealType(m.value)}
                     className={cn(
-                      'rounded-xl border px-2 py-2 text-xs font-medium transition-colors',
+                      'flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-colors',
                       mealType === m.value
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border text-muted-foreground hover:border-primary/50',
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/40',
                     )}
                   >
-                    {m.label}
+                    <span className={cn(
+                      'text-xs font-semibold',
+                      mealType === m.value ? 'text-primary' : 'text-foreground',
+                    )}>
+                      {m.emoji} {m.label}
+                    </span>
+                    <span className="mt-0.5 text-[10px] text-muted-foreground">{m.time}</span>
                   </button>
                 ))}
               </div>
