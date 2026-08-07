@@ -75,7 +75,7 @@ export async function signup(
   }
 
   const supabase = await getSupabaseServerClient()
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -91,7 +91,11 @@ export async function signup(
     return { error: error.message }
   }
 
-  // Supabase may require email confirmation — redirect to login with message
+  // Session is present when email confirmation is disabled — go straight to dashboard.
+  // Fall back to the confirm-email prompt if Supabase still requires verification.
+  if (data.session) {
+    redirect('/dashboard')
+  }
   redirect('/login?confirmed=1')
 }
 
