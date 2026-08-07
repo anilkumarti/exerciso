@@ -19,9 +19,15 @@ const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
 })
 
-const resetPasswordSchema = z.object({
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-})
+const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine(d => d.password === d.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  })
 
 export type AuthActionState = {
   error?: string
@@ -102,7 +108,7 @@ export async function forgotPassword(
 
   const supabase = await getSupabaseServerClient()
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback?next=/reset-password`,
   })
 
   if (error) {
@@ -116,7 +122,10 @@ export async function resetPassword(
   _prev: AuthActionState,
   formData: FormData
 ): Promise<AuthActionState> {
-  const raw = { password: formData.get('password') as string }
+  const raw = {
+    password: formData.get('password') as string,
+    confirmPassword: formData.get('confirmPassword') as string,
+  }
 
   const parsed = resetPasswordSchema.safeParse(raw)
   if (!parsed.success) {

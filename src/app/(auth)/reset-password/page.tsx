@@ -33,6 +33,17 @@ export default function ResetPasswordPage() {
           errors={state.fieldErrors?.password}
         />
 
+        <AuthField
+          id="confirmPassword"
+          name="confirmPassword"
+          label="Confirm new password"
+          type="password"
+          placeholder="Re-enter your password"
+          autoComplete="new-password"
+          required
+          errors={state.fieldErrors?.confirmPassword}
+        />
+
         <SubmitButton label="Update password" loadingLabel="Updating…" />
       </form>
     </div>
