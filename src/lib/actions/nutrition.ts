@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
+import type { MealType } from '@/types/database'
 
 async function getUser() {
   const supabase = await getSupabaseServerClient()
@@ -27,7 +28,7 @@ async function getOrCreateLog(
 
   const { data: newLog, error } = await supabase
     .from('nutrition_logs')
-    .insert({ user_id: userId, logged_date: date })
+    .insert({ user_id: userId, logged_date: date, notes: null })
     .select('id')
     .single()
 
@@ -46,7 +47,7 @@ export async function logFood(formData: FormData) {
 
   const date = formData.get('date') as string
   const foodName = (formData.get('food_name') as string)?.trim()
-  const mealType = (formData.get('meal_type') as string) || 'snack'
+  const mealType = ((formData.get('meal_type') as string) || 'snack') as MealType
   const calories = Math.round(parseFloat(formData.get('calories') as string) || 0)
   const protein_g = parseFloat(formData.get('protein_g') as string) || 0
   const carbs_g = parseFloat(formData.get('carbs_g') as string) || 0
@@ -60,6 +61,7 @@ export async function logFood(formData: FormData) {
   await supabase.from('food_entries').insert({
     nutrition_log_id: logId,
     user_id: user.id,
+    food_db_id: null,
     food_name_snapshot: foodName,
     meal_type: mealType,
     quantity_grams,
@@ -145,8 +147,9 @@ export async function copyYesterdayLog(today: string) {
     entries.map(e => ({
       nutrition_log_id: todayLogId,
       user_id: user.id,
+      food_db_id: null,
       food_name_snapshot: e.food_name_snapshot,
-      meal_type: e.meal_type,
+      meal_type: e.meal_type as MealType,
       quantity_grams: e.quantity_grams,
       calories: e.calories,
       protein_g: e.protein_g,
@@ -169,8 +172,9 @@ export async function logMeal(mealEntries: MealEntryPayload[], date: string) {
     mealEntries.map(e => ({
       nutrition_log_id: logId,
       user_id: user.id,
+      food_db_id: null,
       food_name_snapshot: e.food_name,
-      meal_type: e.meal_type,
+      meal_type: e.meal_type as MealType,
       quantity_grams: e.quantity_grams,
       calories: Math.round(e.calories),
       protein_g: e.protein_g,

@@ -11,6 +11,7 @@ export interface Profile {
   goal_weight_kg: number | null
   activity_level: ActivityLevel
   fitness_goal: FitnessGoal
+  onboarding_done: boolean
 }
 
 export async function getProfile(): Promise<Profile | null> {
@@ -20,7 +21,7 @@ export async function getProfile(): Promise<Profile | null> {
 
   const { data } = await supabase
     .from('profiles')
-    .select('id, display_name, date_of_birth, weight_unit, height_unit, height_cm, goal_weight_kg, activity_level, fitness_goal')
+    .select('id, display_name, date_of_birth, weight_unit, height_unit, height_cm, goal_weight_kg, activity_level, fitness_goal, onboarding_done')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -34,5 +35,6 @@ export async function getProfile(): Promise<Profile | null> {
     goal_weight_kg: null,
     activity_level: 'moderately_active',
     fitness_goal: 'build_muscle',
+    onboarding_done: false,
   }
 }

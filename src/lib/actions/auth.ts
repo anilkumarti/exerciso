@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
-import { getSupabaseServerClient } from '@/lib/supabase/server'
+import { getSupabaseServerClient, getSupabaseServiceClient } from '@/lib/supabase/server'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -54,13 +54,24 @@ export async function login(
   }
 
   const supabase = await getSupabaseServerClient()
-  const { error } = await supabase.auth.signInWithPassword(parsed.data)
+  const { data: signInData, error } = await supabase.auth.signInWithPassword(parsed.data)
 
   if (error) {
     return { error: 'Invalid email or password' }
   }
 
-  redirect('/dashboard')
+  const userId = signInData.session?.user?.id
+  let onboardingDone = true
+  if (userId) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_done')
+      .eq('id', userId)
+      .maybeSingle()
+    onboardingDone = profile?.onboarding_done ?? false
+  }
+
+  redirect(onboardingDone ? '/dashboard' : '/onboarding')
 }
 
 export async function signup(
@@ -81,33 +92,65 @@ export async function signup(
   }
 
   const supabase = await getSupabaseServerClient()
-  const { data, error } = await supabase.auth.signUp({
+  const admin = getSupabaseServiceClient()
+
+  // Create user via admin API so we can pre-confirm the email and skip the
+  // confirmation step entirely. Falls back to regular signUp if the service
+  // role key isn't a true service-role JWT (e.g. during local dev with a
+  // missing/wrong key).
+  const { data: adminData, error: adminError } = await admin.auth.admin.createUser({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: {
-      data: { display_name: parsed.data.displayName },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
-    },
+    email_confirm: true,
+    user_metadata: { display_name: parsed.data.displayName },
   })
 
-  if (error) {
-    const msg = error.message.toLowerCase()
-    const message = msg.includes('invalid')
-      ? 'Please enter a valid email address'
-      : msg.includes('already registered') || msg.includes('user already registered')
-        ? 'An account with this email already exists'
-        : msg.includes('rate limit')
-          ? 'Too many attempts. Please wait a few minutes and try again.'
-          : error.message
-    return { error: message, values: savedValues, _key: Date.now() }
+  if (adminError) {
+    // Service role key not available or another admin error — fall back to
+    // standard signUp (user will receive a confirmation email).
+    const { data, error } = await supabase.auth.signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      options: {
+        data: { display_name: parsed.data.displayName },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      const msg = error.message.toLowerCase()
+      const message = msg.includes('invalid')
+        ? 'Please enter a valid email address'
+        : msg.includes('already registered') || msg.includes('user already registered')
+          ? 'An account with this email already exists'
+          : msg.includes('rate limit')
+            ? 'Too many attempts. Please wait a few minutes and try again.'
+            : error.message
+      return { error: message, values: savedValues, _key: Date.now() }
+    }
+
+    if (data.session) {
+      redirect('/onboarding')
+    }
+    redirect('/login?confirmed=1')
   }
 
-  // Session is present when email confirmation is disabled — go straight to dashboard.
-  // Fall back to the confirm-email prompt if Supabase still requires verification.
-  if (data.session) {
-    redirect('/dashboard')
+  if (!adminData.user) {
+    return { error: 'Failed to create account. Please try again.', values: savedValues, _key: Date.now() }
   }
-  redirect('/login?confirmed=1')
+
+  // Admin user creation succeeded — email is pre-confirmed. Sign in immediately.
+  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  })
+
+  if (signInError || !signInData.session) {
+    // Created but couldn't sign in — send to login
+    redirect('/login?confirmed=1')
+  }
+
+  redirect('/onboarding')
 }
 
 export async function forgotPassword(
