@@ -38,6 +38,7 @@ export async function getSession(id: string): Promise<SessionRow | null> {
       id, status, started_at, completed_at, duration_seconds, plan_day_name_snapshot,
       exercises:session_exercises(
         id, exercise_name_snapshot, exercise_order, was_skipped, plan_exercise_id,
+        plan_exercise:plan_exercises(target_sets, target_reps),
         sets:exercise_sets(id, set_number, weight_kg, reps, is_completed)
       )
     `)
@@ -46,15 +47,20 @@ export async function getSession(id: string): Promise<SessionRow | null> {
 
   if (error || !data) return null
 
-  const session = data as SessionRow
+  type RawEx = Omit<SessionExerciseRow, 'target_sets' | 'target_reps'> & {
+    plan_exercise: { target_sets: number | null; target_reps: string | null } | null
+    sets: SetRow[]
+  }
+  const raw = data as unknown as Omit<SessionRow, 'exercises'> & { exercises: RawEx[] }
+
   return {
-    ...session,
-    exercises: (session.exercises ?? [])
+    ...raw,
+    exercises: (raw.exercises ?? [])
       .sort((a, b) => a.exercise_order - b.exercise_order)
-      .map((ex) => ({
+      .map(({ plan_exercise, ...ex }) => ({
         ...ex,
-        target_sets: null,
-        target_reps: null,
+        target_sets: plan_exercise?.target_sets ?? null,
+        target_reps: plan_exercise?.target_reps ?? null,
         sets: (ex.sets ?? []).sort((a, b) => a.set_number - b.set_number),
       })),
   }

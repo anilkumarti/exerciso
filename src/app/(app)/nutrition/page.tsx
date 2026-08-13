@@ -34,7 +34,8 @@ const MEAL_ORDER = [
 ]
 
 function todayString() {
-  return new Date().toISOString().split('T')[0]
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 function formatDate(iso: string) {
@@ -70,7 +71,7 @@ export default async function NutritionPage() {
   for (const day of [...weeklyDays].reverse()) {
     if (day.entries_count > 0 && day.protein_g >= targets.protein_g) {
       streak++
-    } else if (day.entries_count > 0) {
+    } else {
       break
     }
   }
@@ -97,9 +98,9 @@ export default async function NutritionPage() {
 
   // Yesterday's data for copy-yesterday feature
   const yesterdayStr = (() => {
-    const d = new Date(today)
+    const d = new Date()
     d.setDate(d.getDate() - 1)
-    return d.toISOString().split('T')[0]
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
   })()
   const yesterdayDay = weeklyDays.find(d => d.date === yesterdayStr)
   const hasYesterdayData = (yesterdayDay?.entries_count ?? 0) > 0

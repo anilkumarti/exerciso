@@ -100,7 +100,8 @@ export async function getWeeklyHistory(): Promise<WeeklyDay[]> {
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(d.getDate() - i)
-    days.push({ date: d.toISOString().split('T')[0], calories: 0, protein_g: 0, entries_count: 0 })
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    days.push({ date: dateStr, calories: 0, protein_g: 0, entries_count: 0 })
   }
 
   const { data: logs } = await supabase

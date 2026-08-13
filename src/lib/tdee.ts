@@ -47,11 +47,11 @@ export const STATIC_TARGETS: Record<FitnessGoal, MacroTargets> = {
 }
 
 function ageFromDob(dob: string): number {
+  const [year, month, day] = dob.split('-').map(Number)
   const today = new Date()
-  const birth = new Date(dob)
-  let age = today.getFullYear() - birth.getFullYear()
-  const m = today.getMonth() - birth.getMonth()
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
+  let age = today.getFullYear() - year
+  const m = today.getMonth() + 1 - month
+  if (m < 0 || (m === 0 && today.getDate() < day)) age--
   return Math.max(age, 1)
 }
 

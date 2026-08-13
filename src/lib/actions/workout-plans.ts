@@ -24,8 +24,9 @@ function revalidatePlan(planId?: string) {
 
 export async function createPlan(formData: FormData) {
   const { supabase, user } = await getUser()
-  const name = formData.get('name') as string
-  const description = (formData.get('description') as string) || null
+  const name = ((formData.get('name') as string) ?? '').trim()
+  if (!name) throw new Error('Plan name is required')
+  const description = (formData.get('description') as string)?.trim() || null
   const split_type = ((formData.get('split_type') as string) ||
     'custom') as SplitType
 
@@ -42,8 +43,8 @@ export async function createPlan(formData: FormData) {
 }
 
 export async function deletePlan(id: string) {
-  const { supabase } = await getUser()
-  const { error } = await supabase.from('workout_plans').delete().eq('id', id)
+  const { supabase, user } = await getUser()
+  const { error } = await supabase.from('workout_plans').delete().eq('id', id).eq('user_id', user.id)
   if (error) throw new Error(error.message)
   revalidatePlan()
   redirect('/workout')
@@ -55,19 +56,23 @@ export async function setActivePlan(id: string) {
     .from('workout_plans')
     .update({ is_active: false })
     .eq('user_id', user.id)
-  await supabase.from('workout_plans').update({ is_active: true }).eq('id', id)
+  await supabase.from('workout_plans').update({ is_active: true }).eq('id', id).eq('user_id', user.id)
   revalidatePlan(id)
 }
 
 export async function createDay(planId: string, formData: FormData) {
   const { supabase, user } = await getUser()
-  const name = formData.get('name') as string
+  const name = ((formData.get('name') as string) ?? '').trim()
+  if (!name) throw new Error('Day name is required')
 
-  const { data: existing } = await supabase
+  const { data: maxRow } = await supabase
     .from('workout_plan_days')
-    .select('id')
+    .select('day_order')
     .eq('plan_id', planId)
-  const day_order = (existing ?? []).length
+    .order('day_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const day_order = (maxRow?.day_order ?? -1) + 1
 
   const { error } = await supabase
     .from('workout_plan_days')
@@ -78,11 +83,12 @@ export async function createDay(planId: string, formData: FormData) {
 }
 
 export async function deleteDay(dayId: string, planId: string) {
-  const { supabase } = await getUser()
+  const { supabase, user } = await getUser()
   const { error } = await supabase
     .from('workout_plan_days')
     .delete()
     .eq('id', dayId)
+    .eq('user_id', user.id)
   if (error) throw new Error(error.message)
   revalidatePlan(planId)
 }
@@ -98,11 +104,14 @@ export async function addExerciseToDay(
   const target_reps = (formData.get('target_reps') as string) || '8-12'
   const rest_seconds = parseInt(formData.get('rest_seconds') as string) || 90
 
-  const { data: existing } = await supabase
+  const { data: maxEx } = await supabase
     .from('plan_exercises')
-    .select('id')
+    .select('exercise_order')
     .eq('plan_day_id', dayId)
-  const exercise_order = (existing ?? []).length
+    .order('exercise_order', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const exercise_order = (maxEx?.exercise_order ?? -1) + 1
 
   const { error } = await supabase.from('plan_exercises').insert({
     plan_day_id: dayId,
@@ -120,11 +129,12 @@ export async function addExerciseToDay(
 }
 
 export async function removeExerciseFromDay(exerciseId: string, planId: string) {
-  const { supabase } = await getUser()
+  const { supabase, user } = await getUser()
   const { error } = await supabase
     .from('plan_exercises')
     .delete()
     .eq('id', exerciseId)
+    .eq('user_id', user.id)
   if (error) throw new Error(error.message)
   revalidatePlan(planId)
 }

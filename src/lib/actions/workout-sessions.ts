@@ -105,10 +105,11 @@ export async function logSet(
 }
 
 export async function finishSession(sessionId: string, startedAt: string) {
-  const { supabase } = await getUser()
+  const { supabase, user } = await getUser()
 
-  const duration_seconds = Math.floor(
-    (Date.now() - new Date(startedAt).getTime()) / 1000
+  const duration_seconds = Math.max(
+    0,
+    Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000),
   )
 
   const { error } = await supabase
@@ -119,6 +120,7 @@ export async function finishSession(sessionId: string, startedAt: string) {
       duration_seconds,
     })
     .eq('id', sessionId)
+    .eq('user_id', user.id)
 
   if (error) throw new Error(error.message)
 
@@ -127,12 +129,13 @@ export async function finishSession(sessionId: string, startedAt: string) {
 }
 
 export async function abandonSession(sessionId: string) {
-  const { supabase } = await getUser()
+  const { supabase, user } = await getUser()
 
   const { error } = await supabase
     .from('workout_sessions')
     .update({ status: 'abandoned' })
     .eq('id', sessionId)
+    .eq('user_id', user.id)
 
   if (error) throw new Error(error.message)
 
