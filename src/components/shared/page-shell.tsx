@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
@@ -41,7 +41,7 @@ export function PageHeader({
       {backHref && (
         <Link
           href={backHref}
-          className="mb-3 -ml-1.5 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 pl-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-3 -ml-1.5 inline-flex items-center gap-0.5 rounded-lg py-1 pr-2 pl-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
           <ChevronLeft className="size-4" />
           Back
@@ -49,7 +49,7 @@ export function PageHeader({
       )}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-[1.75rem] leading-tight font-bold">{title}</h1>
+          <h1 className="text-[1.875rem] leading-tight font-black tracking-tight">{title}</h1>
           {subtitle && (
             <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
           )}
@@ -79,17 +79,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border px-6 py-14 text-center',
+        'flex flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-border px-6 py-16 text-center',
         className
       )}
     >
-      <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+      <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-8 ring-primary/5">
         <Icon className="size-7" />
       </div>
-      <div className="space-y-1">
-        <p className="font-semibold">{title}</p>
+      <div className="space-y-1.5">
+        <p className="text-base font-bold">{title}</p>
         {description && (
-          <p className="mx-auto max-w-xs text-sm text-muted-foreground">
+          <p className="mx-auto max-w-[22ch] text-sm text-muted-foreground leading-relaxed">
             {description}
           </p>
         )}
@@ -116,15 +116,19 @@ export function StatTile({
   className?: string
 }) {
   return (
-    <div className={cn('surface flex flex-col gap-1 p-4', className)}>
-      <div className="flex items-center gap-1.5 text-muted-foreground">
-        {Icon && <Icon className="size-3.5" />}
-        <span className="text-xs font-medium tracking-wide uppercase">
-          {label}
-        </span>
+    <div className={cn('surface flex flex-col gap-3 p-4', className)}>
+      {Icon && (
+        <div className="flex size-8 items-center justify-center rounded-xl bg-primary/12 text-primary">
+          <Icon className="size-4" />
+        </div>
+      )}
+      <div>
+        <p className="tabular text-[2rem] leading-none font-black tracking-tight">{value}</p>
+        <p className="mt-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+        {hint && (
+          <p className="mt-0.5 text-xs text-muted-foreground/70 truncate">{hint}</p>
+        )}
       </div>
-      <p className="tabular text-2xl leading-none font-bold">{value}</p>
-      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   )
 }
@@ -143,13 +147,16 @@ export function SectionHeader({
 }) {
   return (
     <div className="mb-3 flex items-center justify-between gap-2">
-      <h2 className="text-sm font-semibold">{title}</h2>
+      <h2 className="text-[0.75rem] font-bold uppercase tracking-widest text-muted-foreground">
+        {title}
+      </h2>
       {href && (
         <Link
           href={href}
-          className="text-xs font-medium text-primary transition-opacity hover:opacity-70"
+          className="inline-flex items-center gap-0.5 text-xs font-semibold text-primary transition-opacity hover:opacity-70"
         >
           {linkLabel}
+          <ChevronRight className="size-3" />
         </Link>
       )}
     </div>

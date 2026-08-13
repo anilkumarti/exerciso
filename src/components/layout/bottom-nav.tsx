@@ -13,22 +13,22 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Home', Icon: Home, matchExact: true },
-  { href: '/workout', label: 'Workout', Icon: Dumbbell },
+  { href: '/dashboard', label: 'Home',      Icon: Home,      matchExact: true },
+  { href: '/workout',   label: 'Workout',   Icon: Dumbbell },
   { href: '/exercises', label: 'Exercises', Icon: Library },
   { href: '/nutrition', label: 'Nutrition', Icon: Apple },
-  { href: '/body', label: 'Body', Icon: LineChart },
+  { href: '/body',      label: 'Body',      Icon: LineChart },
 ]
 
 export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="glass fixed inset-x-0 bottom-0 z-50 border-t border-border">
-      <div
-        className="mx-auto flex max-w-lg items-stretch px-1"
-        style={{ paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom))' }}
-      >
+    <nav
+      className="fixed inset-x-3 z-50"
+      style={{ bottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+    >
+      <div className="glass mx-auto flex max-w-lg items-center rounded-[1.5rem] border border-border px-1.5 py-1.5 shadow-raised">
         {navItems.map(({ href, label, Icon, matchExact }) => {
           const isActive = matchExact
             ? pathname === href
@@ -40,26 +40,21 @@ export function BottomNav() {
               href={href}
               aria-label={label}
               aria-current={isActive ? 'page' : undefined}
-              className="group flex flex-1 flex-col items-center gap-1 pt-2 pb-1"
+              className="group flex flex-1 flex-col items-center gap-0.5 py-0.5"
             >
               <span
                 className={cn(
-                  'flex h-7 w-12 items-center justify-center rounded-full transition-all duration-200',
+                  'flex h-9 w-full max-w-[3.25rem] items-center justify-center rounded-[1rem] transition-all duration-200',
                   isActive
-                    ? 'bg-primary/12 text-primary'
-                    : 'text-muted-foreground group-hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground group-hover:bg-muted group-hover:text-foreground'
                 )}
               >
-                <Icon
-                  className={cn(
-                    'transition-transform duration-200',
-                    isActive ? 'size-[1.15rem] scale-105' : 'size-[1.15rem]'
-                  )}
-                />
+                <Icon className="size-[1.075rem]" />
               </span>
               <span
                 className={cn(
-                  'text-[0.6875rem] leading-none font-medium transition-colors',
+                  'text-[0.6125rem] leading-none font-medium tracking-tight transition-colors',
                   isActive ? 'text-primary' : 'text-muted-foreground'
                 )}
               >

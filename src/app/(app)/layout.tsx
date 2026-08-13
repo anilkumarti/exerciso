@@ -12,7 +12,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-svh flex-col">
-      <main className="flex-1 pb-[calc(4rem+max(0.5rem,env(safe-area-inset-bottom)))]">
+      <main className="flex-1 pb-[calc(5.25rem+max(0.75rem,env(safe-area-inset-bottom)))]">
         {children}
       </main>
       <BottomNav />

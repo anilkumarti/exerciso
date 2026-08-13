@@ -6,7 +6,7 @@ import { calculateTargets } from '@/lib/tdee'
 import { getProfile } from '@/lib/queries/profile'
 import { deleteFood } from '@/lib/actions/nutrition'
 import { suggestMeals, type DietPref } from '@/data/food-database'
-import { MacroBar } from '@/components/nutrition/macro-bar'
+import { MacroRing } from '@/components/nutrition/macro-bar'
 import { AddFoodSheet } from '@/components/nutrition/add-food-sheet'
 import { DayModeToggle } from '@/components/nutrition/day-mode-toggle'
 import { MealSuggestions } from '@/components/nutrition/meal-suggestions'
@@ -173,12 +173,26 @@ export default async function NutritionPage() {
         </Link>
       )}
 
-      {/* Macro bars */}
-      <div className="mx-4 mb-6 surface p-4 flex flex-col gap-4">
-        <MacroBar label="Protein" current={totals.protein_g} target={targets.protein_g} color="green" hero />
-        <div className="border-t border-border" />
-        <MacroBar label="Carbs" current={totals.carbs_g} target={targets.carbs_g} color="amber" />
-        <MacroBar label="Fat"   current={totals.fat_g}   target={targets.fat_g}   color="red" />
+      {/* Macro rings */}
+      <div className="mx-4 mb-6 grid grid-cols-3 gap-2">
+        <MacroRing
+          label="Protein"
+          current={totals.protein_g}
+          target={targets.protein_g}
+          strokeColor="var(--chart-2)"
+        />
+        <MacroRing
+          label="Carbs"
+          current={totals.carbs_g}
+          target={targets.carbs_g}
+          strokeColor="var(--chart-3)"
+        />
+        <MacroRing
+          label="Fat"
+          current={totals.fat_g}
+          target={targets.fat_g}
+          strokeColor="var(--chart-5)"
+        />
       </div>
 
       {/* Meal suggestions (shown when calories remaining ≥ 300) */}

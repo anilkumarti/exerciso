@@ -22,11 +22,11 @@ import { GreetingText } from '@/components/shared/greeting-text'
 import { ConfirmAction } from '@/components/shared/confirm-action'
 
 const SPLIT_LABELS: Record<string, string> = {
-  full_body: 'Full Body',
-  upper_lower: 'Upper/Lower',
-  push_pull_legs: 'Push/Pull/Legs',
-  bro_split: 'Bro Split',
-  custom: 'Custom',
+  full_body:      'Full Body',
+  upper_lower:    'Upper / Lower',
+  push_pull_legs: 'Push / Pull / Legs',
+  bro_split:      'Bro Split',
+  custom:         'Custom',
 }
 
 function formatDuration(s: number | null) {
@@ -52,50 +52,54 @@ export default async function DashboardPage() {
 
   return (
     <PageShell>
-      {/* Greeting */}
-      <header className="flex items-start justify-between gap-3 pt-8 pb-6">
+      {/* ── Greeting ─────────────────────────────────────────── */}
+      <header className="flex items-start justify-between gap-3 pt-10 pb-6">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="mb-1 text-[0.75rem] font-semibold uppercase tracking-widest text-muted-foreground">
             <GreetingText />
           </p>
-          <h1 className="mt-0.5 truncate text-[1.75rem] leading-tight font-bold">
-            {firstName ?? 'Welcome back'}
+          <h1 className="truncate text-[2rem] leading-tight font-black tracking-tight">
+            {firstName ? (
+              <span className="text-brand-gradient">{firstName}</span>
+            ) : (
+              'Welcome back'
+            )}
           </h1>
         </div>
         <Link
           href="/settings/profile"
           aria-label="Settings"
-          className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-card transition-colors hover:text-foreground"
+          className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-2xl border border-border bg-card text-muted-foreground shadow-card transition-colors hover:text-foreground"
         >
-          <Settings className="size-[1.15rem]" />
+          <Settings className="size-[1.1rem]" />
         </Link>
       </header>
 
-      {/* Resume active session — highest priority action */}
+      {/* ── Active session banner ─────────────────────────────── */}
       {activeSession && (
         <Link href={`/workout/session/${activeSession.id}`} className="mb-5 block">
           <div className="bg-brand-gradient shadow-hero flex items-center gap-4 rounded-2xl p-4 text-white transition-transform active:scale-[0.99]">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
               <Play className="size-5 fill-current" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase opacity-90">
+              <p className="flex items-center gap-1.5 text-[0.6875rem] font-bold tracking-widest uppercase opacity-90">
                 <span className="relative flex size-1.5">
                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex size-1.5 rounded-full bg-white" />
                 </span>
                 In progress
               </p>
-              <p className="mt-0.5 truncate font-semibold">
+              <p className="mt-0.5 truncate text-base font-bold">
                 {activeSession.plan_day_name_snapshot ?? 'Workout'}
               </p>
             </div>
-            <ChevronRight className="size-5 shrink-0 opacity-80" />
+            <ChevronRight className="size-5 shrink-0 opacity-70" />
           </div>
         </Link>
       )}
 
-      {/* Weekly stats */}
+      {/* ── Weekly stats ──────────────────────────────────────── */}
       <div className="mb-6 grid grid-cols-2 gap-3">
         <StatTile
           label="This week"
@@ -111,7 +115,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Active plan */}
+      {/* ── Active plan ───────────────────────────────────────── */}
       <section className="mb-6">
         <SectionHeader
           title="Active plan"
@@ -121,23 +125,22 @@ export default async function DashboardPage() {
 
         {activePlan ? (
           <div className="surface overflow-hidden">
-            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+            {/* Plan header */}
+            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3.5">
               <div className="min-w-0">
-                <p className="truncate font-semibold">{activePlan.name}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="truncate font-bold">{activePlan.name}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {SPLIT_LABELS[activePlan.split_type] ?? activePlan.split_type}
                 </p>
               </div>
-              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+              <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[0.6875rem] font-bold text-primary">
                 Active
               </span>
             </div>
 
             {activePlan.days.length === 0 ? (
-              <div className="px-4 py-6 text-center">
-                <p className="text-sm text-muted-foreground">
-                  No training days yet.
-                </p>
+              <div className="px-4 py-8 text-center">
+                <p className="text-sm text-muted-foreground">No training days yet.</p>
                 <Link href={`/workout/plans/${activePlan.id}`}>
                   <Button size="sm" variant="outline" className="mt-3">
                     Add a day
@@ -156,9 +159,7 @@ export default async function DashboardPage() {
                         <Dumbbell className="size-4" />
                       </span>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">
-                          {day.name}
-                        </p>
+                        <p className="truncate text-sm font-semibold">{day.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {day.exercise_count}{' '}
                           {day.exercise_count === 1 ? 'exercise' : 'exercises'}
@@ -170,14 +171,14 @@ export default async function DashboardPage() {
                         action={startSession.bind(null, activePlan.id, day.id, day.name)}
                         message="You have a workout in progress. Starting a new one will abandon the current session. Continue?"
                       >
-                        <Button size="sm" type="submit" className="gap-1">
+                        <Button size="sm" type="submit" className="gap-1.5 rounded-xl">
                           <Play className="size-3 fill-current" />
                           Start
                         </Button>
                       </ConfirmAction>
                     ) : (
                       <form action={startSession.bind(null, activePlan.id, day.id, day.name)}>
-                        <Button size="sm" type="submit" className="gap-1">
+                        <Button size="sm" type="submit" className="gap-1.5 rounded-xl">
                           <Play className="size-3 fill-current" />
                           Start
                         </Button>
@@ -202,43 +203,41 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* Recent workouts */}
+      {/* ── Recent workouts ───────────────────────────────────── */}
       {recentSessions.length > 0 && (
         <section>
           <SectionHeader title="Recent workouts" href="/workout/history" />
-          <ul className="flex flex-col gap-2">
+          <div className="surface overflow-hidden divide-y divide-border">
             {recentSessions.map((s) => (
-              <li key={s.id}>
-                <Link href={`/workout/session/${s.id}`} className="block">
-                  <div className="surface flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-success/10 text-[var(--success)]">
-                      <Dumbbell className="size-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
-                        {s.plan_day_name_snapshot ?? 'Workout'}
-                      </p>
-                      <p className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{formatDate(s.started_at)}</span>
-                        <span aria-hidden>·</span>
-                        <span>{s.exercise_count} ex</span>
-                        {formatDuration(s.duration_seconds) && (
-                          <>
-                            <span aria-hidden>·</span>
-                            <span className="inline-flex items-center gap-1">
-                              <Timer className="size-3" />
-                              {formatDuration(s.duration_seconds)}
-                            </span>
-                          </>
-                        )}
-                      </p>
-                    </div>
-                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+              <Link key={s.id} href={`/workout/session/${s.id}`} className="block">
+                <div className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-success/10 text-[var(--success)]">
+                    <Dumbbell className="size-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">
+                      {s.plan_day_name_snapshot ?? 'Workout'}
+                    </p>
+                    <p className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{formatDate(s.started_at)}</span>
+                      <span aria-hidden>·</span>
+                      <span>{s.exercise_count} ex</span>
+                      {formatDuration(s.duration_seconds) && (
+                        <>
+                          <span aria-hidden>·</span>
+                          <span className="inline-flex items-center gap-0.5">
+                            <Timer className="size-3" />
+                            {formatDuration(s.duration_seconds)}
+                          </span>
+                        </>
+                      )}
+                    </p>
                   </div>
-                </Link>
-              </li>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground/50" />
+                </div>
+              </Link>
             ))}
-          </ul>
+          </div>
         </section>
       )}
     </PageShell>
